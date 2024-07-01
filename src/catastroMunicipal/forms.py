@@ -174,3 +174,21 @@ class CasaForm(forms.ModelForm):
             self.fields['casestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
             self.fields['casestreg'].widget.attrs['readonly'] = True
+
+class PagoTributarioForm(forms.ModelForm):
+    class Meta:
+        model = PagoTributario
+        fields = ['pagtrifec', 'cascod', 'pagtriestreg']
+        widgets = {
+            'pagtrifec': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'cascod': forms.Select(attrs={'class': 'form-control'}),
+            'pagtriestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PagoTributarioForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['pagtriestreg'].widget = forms.HiddenInput()
+            self.fields['pagtriestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['pagtriestreg'].widget.attrs['readonly'] = True
