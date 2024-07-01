@@ -84,7 +84,9 @@ def zona_urbana_create(request):
     if request.method == "POST":
         form = ZonaUrbanaForm(request.POST)
         if form.is_valid():
-            form.save()
+            zona_urbana = form.save(commit=False)
+            zona_urbana.zonurbestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            zona_urbana.save()
             return redirect('zona_urbana_list')
     else:
         form = ZonaUrbanaForm()
@@ -116,7 +118,9 @@ def tipo_vivienda_create(request):
     if request.method == "POST":
         form = TipoViviendaForm(request.POST)
         if form.is_valid():
-            form.save()
+            tipo_vivienda = form.save(commit=False)
+            tipo_vivienda.tipvivestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            tipo_vivienda.save()
             return redirect('tipo_vivienda_list')
     else:
         form = TipoViviendaForm()
@@ -148,7 +152,9 @@ def vivienda_create(request):
     if request.method == "POST":
         form = ViviendaForm(request.POST)
         if form.is_valid():
-            form.save()
+            vivienda = form.save(commit=False)
+            vivienda.vivestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            vivienda.save()
             return redirect('vivienda_list')
     else:
         form = ViviendaForm()
@@ -172,6 +178,40 @@ def vivienda_delete(request, pk):
         return redirect('vivienda_list')
     return render(request, 'vivienda_delete.html', {'vivienda': vivienda})
 
+def casa_list(request):
+    casas = Casa.objects.all()
+    return render(request, 'casa_list.html', {'casas': casas})
+
+def casa_create(request):
+    if request.method == "POST":
+        form = CasaForm(request.POST)
+        if form.is_valid():
+            casa = form.save(commit=False)
+            casa.casestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            casa.save()
+            return redirect('casa_list')
+    else:
+        form = CasaForm()
+    return render(request, 'casa_form.html', {'form': form})
+
+def casa_update(request, pk):
+    casa = get_object_or_404(Casa, pk=pk)
+    if request.method == "POST":
+        form = CasaForm(request.POST, instance=casa)
+        if form.is_valid():
+            form.save()
+            return redirect('casa_list')
+    else:
+        form = CasaForm(instance=casa)
+    return render(request, 'casa_form.html', {'form': form})
+
+def casa_delete(request, pk):
+    casa = get_object_or_404(Casa, pk=pk)
+    if request.method == "POST":
+        casa.delete()
+        return redirect('casa_list')
+    return render(request, 'casa_delete.html', {'casa': casa})
+
 def familia_list(request):
     familias = Familia.objects.all()
     return render(request, 'familia_list.html', {'familias': familias})
@@ -180,7 +220,9 @@ def familia_create(request):
     if request.method == "POST":
         form = FamiliaForm(request.POST)
         if form.is_valid():
-            form.save()
+            familia = form.save(commit=False)
+            familia.famnestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            familia.save()
             return redirect('familia_list')
     else:
         form = FamiliaForm()
@@ -197,45 +239,12 @@ def familia_update(request, pk):
         form = FamiliaForm(instance=familia)
     return render(request, 'familia_form.html', {'form': form})
 
-
 def familia_delete(request, pk):
     familia = get_object_or_404(Familia, pk=pk)
     if request.method == "POST":
         familia.delete()
         return redirect('familia_list')
     return render(request, 'familia_delete.html', {'familia': familia})
-
-def tipo_persona_list(request):
-    tipos_persona = TipoPersona.objects.all()
-    return render(request, 'tipo_persona_list.html', {'tipos_persona': tipos_persona})
-
-def tipo_persona_create(request):
-    if request.method == "POST":
-        form = TipoPersonaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('tipo_persona_list')
-    else:
-        form = TipoPersonaForm()
-    return render(request, 'tipo_persona_form.html', {'form': form})
-
-def tipo_persona_update(request, pk):
-    tipo_persona = get_object_or_404(TipoPersona, pk=pk)
-    if request.method == "POST":
-        form = TipoPersonaForm(request.POST, instance=tipo_persona)
-        if form.is_valid():
-            form.save()
-            return redirect('tipo_persona_list')
-    else:
-        form = TipoPersonaForm(instance=tipo_persona)
-    return render(request, 'tipo_persona_form.html', {'form': form})
-
-def tipo_persona_delete(request, pk):
-    tipo_persona = get_object_or_404(TipoPersona, pk=pk)
-    if request.method == "POST":
-        tipo_persona.delete()
-        return redirect('tipo_persona_list')
-    return render(request, 'tipo_persona_delete.html', {'tipo_persona': tipo_persona})
 
 def persona_list(request):
     personas = Persona.objects.all()
@@ -245,7 +254,9 @@ def persona_create(request):
     if request.method == "POST":
         form = PersonaForm(request.POST)
         if form.is_valid():
-            form.save()
+            persona = form.save(commit=False)
+            persona.perestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            persona.save()
             return redirect('persona_list')
     else:
         form = PersonaForm()
@@ -269,70 +280,39 @@ def persona_delete(request, pk):
         return redirect('persona_list')
     return render(request, 'persona_delete.html', {'persona': persona})
 
-def casa_list(request):
-    casas = Casa.objects.all()
-    return render(request, 'casa_list.html', {'casas': casas})
+def tipo_persona_list(request):
+    tipos_persona = TipoPersona.objects.all()
+    return render(request, 'tipo_persona_list.html', {'tipos_persona': tipos_persona})
 
-def casa_create(request):
+def tipo_persona_create(request):
     if request.method == "POST":
-        form = CasaForm(request.POST)
+        form = TipoPersonaForm(request.POST)
+        if form.is_valid():
+            tipo_persona = form.save(commit=False)
+            tipo_persona.tipperestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            tipo_persona.save()
+            return redirect('tipo_persona_list')
+    else:
+        form = TipoPersonaForm()
+    return render(request, 'tipo_persona_form.html', {'form': form})
+
+def tipo_persona_update(request, pk):
+    tipo_persona = get_object_or_404(TipoPersona, pk=pk)
+    if request.method == "POST":
+        form = TipoPersonaForm(request.POST, instance=tipo_persona)
         if form.is_valid():
             form.save()
-            return redirect('casa_list')
+            return redirect('tipo_persona_list')
     else:
-        form = CasaForm()
-    return render(request, 'casa_form.html', {'form': form})
+        form = TipoPersonaForm(instance=tipo_persona)
+    return render(request, 'tipo_persona_form.html', {'form': form})
 
-def casa_update(request, pk):
-    casa = get_object_or_404(Casa, pk=pk)
+def tipo_persona_delete(request, pk):
+    tipo_persona = get_object_or_404(TipoPersona, pk=pk)
     if request.method == "POST":
-        form = CasaForm(request.POST, instance=casa)
-        if form.is_valid():
-            form.save()
-            return redirect('casa_list')
-    else:
-        form = CasaForm(instance=casa)
-    return render(request, 'casa_form.html', {'form': form})
-
-
-def casa_delete(request, pk):
-    casa = get_object_or_404(Casa, pk=pk)
-    if request.method == "POST":
-        casa.delete()
-        return redirect('casa_list')
-    return render(request, 'casa_delete.html', {'casa': casa})
-
-def pago_tributario_list(request):
-    pagos_tributarios = PagoTributario.objects.all()
-    return render(request, 'pago_tributario_list.html', {'pagos_tributarios': pagos_tributarios})
-
-def pago_tributario_create(request):
-    if request.method == "POST":
-        form = PagoTributarioForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('pago_tributario_list')
-    else:
-        form = PagoTributarioForm()
-    return render(request, 'pago_tributario_form.html', {'form': form})
-
-def pago_tributario_update(request, pk):
-    pago_tributario = get_object_or_404(PagoTributario, pk=pk)
-    if request.method == "POST":
-        form = PagoTributarioForm(request.POST, instance=pago_tributario)
-        if form.is_valid():
-            form.save()
-            return redirect('pago_tributario_list')
-    else:
-        form = PagoTributarioForm(instance=pago_tributario)
-    return render(request, 'pago_tributario_form.html', {'form': form})
-
-def pago_tributario_delete(request, pk):
-    pago_tributario = get_object_or_404(PagoTributario, pk=pk)
-    if request.method == "POST":
-        pago_tributario.delete()
-        return redirect('pago_tributario_list')
-    return render(request, 'pago_tributario_delete.html', {'pago_tributario': pago_tributario})
+        tipo_persona.delete()
+        return redirect('tipo_persona_list')
+    return render(request, 'tipo_persona_delete.html', {'tipo_persona': tipo_persona})
 
 def propietario_list(request):
     propietarios = Propietario.objects.all()
@@ -342,7 +322,9 @@ def propietario_create(request):
     if request.method == "POST":
         form = PropietarioForm(request.POST)
         if form.is_valid():
-            form.save()
+            propietario = form.save(commit=False)
+            propietario.proestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            propietario.save()
             return redirect('propietario_list')
     else:
         form = PropietarioForm()
@@ -365,4 +347,38 @@ def propietario_delete(request, pk):
         propietario.delete()
         return redirect('propietario_list')
     return render(request, 'propietario_delete.html', {'propietario': propietario})
+
+def pago_tributario_list(request):
+    pagos_tributarios = PagoTributario.objects.all()
+    return render(request, 'pago_tributario_list.html', {'pagos_tributarios': pagos_tributarios})
+
+def pago_tributario_create(request):
+    if request.method == "POST":
+        form = PagoTributarioForm(request.POST)
+        if form.is_valid():
+            pago_tributario = form.save(commit=False)
+            pago_tributario.pagtribestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            pago_tributario.save()
+            return redirect('pago_tributario_list')
+    else:
+        form = PagoTributarioForm()
+    return render(request, 'pago_tributario_form.html', {'form': form})
+
+def pago_tributario_update(request, pk):
+    pago_tributario = get_object_or_404(PagoTributario, pk=pk)
+    if request.method == "POST":
+        form = PagoTributarioForm(request.POST, instance=pago_tributario)
+        if form.is_valid():
+            form.save()
+            return redirect('pago_tributario_list')
+    else:
+        form = PagoTributarioForm(instance=pago_tributario)
+    return render(request, 'pago_tributario_form.html', {'form': form})
+
+def pago_tributario_delete(request, pk):
+    pago_tributario = get_object_or_404(PagoTributario, pk=pk)
+    if request.method == "POST":
+        pago_tributario.delete()
+        return redirect('pago_tributario_list')
+    return render(request, 'pago_tributario_delete.html', {'pago_tributario': pago_tributario})
 
