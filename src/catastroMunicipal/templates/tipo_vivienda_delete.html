@@ -1,0 +1,11 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Eliminar Tipo Persona</h2>
+<p>¿Estás seguro de que deseas eliminar el Tipo Persona "{{ tipo_persona }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'tipo_persona_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

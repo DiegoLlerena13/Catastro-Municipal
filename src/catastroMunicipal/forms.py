@@ -57,18 +57,20 @@ class ZonaUrbanaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['zonestreg'].widget.attrs['readonly'] = True
 
+class TipoPersonaForm(forms.ModelForm):
+    class Meta:
+        model = TipoPersona
+        fields = ['tipperdes', 'tipvivestreg']
+        widgets = {
+            'tipperdes': forms.TextInput(attrs={'class': 'form-control'}),
+            'tipvivestreg': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
+    def __init__(self, *args, **kwargs):
+        super(TipoPersonaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['tipvivestreg'].widget = forms.HiddenInput()
+            self.fields['tipvivestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['tipvivestreg'].widget.attrs['readonly'] = True
 
-# class ZonaUrbana(models.Model):
-#     zoncod = models.AutoField(db_column='ZonCod', primary_key=True, verbose_name="Código")
-#     zonnom = models.CharField(db_column='ZonNom', max_length=20, verbose_name="Nombre")
-#     muncod = models.ForeignKey(Municipio, on_delete=models.CASCADE, db_column='MunCod', verbose_name="Código de Municipio")
-#     zonestreg = models.CharField(db_column='ZonEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
-
-#     class Meta:
-#         verbose_name = "Zona Urbana"
-#         verbose_name_plural = "Zonas Urbanas"
-#         db_table = 'zona_urbana'
-
-#     def __str__(self):
-#         return self.zonnom
