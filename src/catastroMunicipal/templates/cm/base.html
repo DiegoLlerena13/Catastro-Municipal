@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión del Catastro Municipal</title>
+    <title>Gestión de Catastro Municipal</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <style>
         body {
             padding-top: 70px;
@@ -47,7 +46,48 @@
                     <!-- 2 -->
                     <a class="nav-link" href="{% url 'municipio_list' %}">Municipios</a>
                 </li>
-
+                <li class="nav-item">
+                    <!-- 3 -->
+                    <a class="nav-link" href="{% url 'zona_urbana_list' %}">Zona Urbana</a>
+                </li>
+                <!-- Tipo Vivienda -->
+                <li class="nav-item">
+                    <!-- 4 -->
+                    <a class="nav-link" href="{% url 'tipo_vivienda_list' %}">Tipo de Vivienda</a>
+                </li>
+                <!-- vivienda  -->
+                <li class="nav-item">
+                    <!-- 5 -->
+                    <a class="nav-link" href="{% url 'vivienda_list' %}">Vivienda</a>
+                </li>
+                <!-- familia  -->
+                <li class="nav-item">
+                    <!-- 6 -->
+                    <a class="nav-link" href="{% url 'familia_list' %}">Familia</a>
+                </li>
+                <!-- persona  -->
+                <li class="nav-item">
+                    <!-- 7 -->
+                    <a class="nav-link" href="{% url 'persona_list' %}">Persona</a>
+                </li>
+                <!-- tipo persona  -->
+                <li class="nav-item">
+                    <!-- 8 -->
+                    <a class="nav-link" href="{% url 'tipo_persona_list' %}">Tipo de Persona</a>
+                </li>
+                <!-- casa  -->
+                <li class="nav-item">
+                    <!-- 9 -->
+                    <a class="nav-link" href="{% url 'casa_list' %}">Casa</a>
+                </li>
+                <li class="nav-item">
+                    <!-- 10 -->
+                    <a class="nav-link" href="{% url 'pago_tributario_list' %}">Pago Tributario</a>
+                </li>
+                <li class="nav-item">
+                    <!-- 11 -->
+                    <a class="nav-link" href="{% url 'propietario_list' %}">Propietario</a>
+                </li>
             </ul>
         </div>
     </nav>
