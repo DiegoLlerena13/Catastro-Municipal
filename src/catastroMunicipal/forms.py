@@ -113,30 +113,38 @@ class ViviendaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['vivestreg'].widget.attrs['readonly'] = True    
 
-class FamiliaForm(forms.ModelForm):
+class PersonaForm(forms.ModelForm):
     class Meta:
-        model = Familia
-        fields = ['famnom', 'famnumint', 'famestreg']
+        model = Persona
+        fields = ['pernom', 'perapepat', 'perapemat', 'famcod', 'tippercod', 'perestreg']
 
         widgets = {
-            'famnom': forms.TextInput(attrs={'class': 'form-control'}),
-            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
-            'famestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'pernom': forms.TextInput(attrs={'class': 'form-control'}),
+            'perapepat': forms.TextInput(attrs={'class': 'form-control'}),
+            'perapemat': forms.TextInput(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'tippercod': forms.Select(attrs={'class': 'form-control'}),
+            'perestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
-        super(FamiliaForm, self).__init__(*args, **kwargs)
+        super(PersonaForm, self).__init__(*args, **kwargs)
         if not self.instance.pk:  # Si se está creando una nueva instancia
-            self.fields['famestreg'].widget = forms.HiddenInput()
-            self.fields['famestreg'].initial = 'A'
+            self.fields['perestreg'].widget = forms.HiddenInput()
+            self.fields['perestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
-            self.fields['famestreg'].widget.attrs['readonly'] = True
+            self.fields['perestreg'].widget.attrs['readonly'] = True
 
     def clean(self):
         cleaned_data = super().clean()
-        famnumint = cleaned_data.get('famnumint')
+        famcod = cleaned_data.get('famcod')
 
-        if famnumint <= 0:
-            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
+        # Verificar la cantidad de integrantes de la familia
+        if famcod:
+            integrantes_actuales = Persona.objects.filter(famcod=famcod).count()
+            num_integrantes_familia = famcod.famnumint  # Obtener el número máximo de integrantes de la familia
+
+            if integrantes_actuales >= num_integrantes_familia:
+                raise forms.ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. No se pueden agregar más.")
 
         return cleaned_data

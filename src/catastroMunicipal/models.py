@@ -139,7 +139,7 @@ class Persona(models.Model):
     perapemat = models.CharField(db_column='PerApeMat', max_length=10, verbose_name="Apellido Materno")
     famcod = models.ForeignKey(Familia, on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
     tippercod = models.ForeignKey(TipoPersona, on_delete=models.CASCADE, db_column='TipPerCod', verbose_name="Código de Tipo de Persona")
-    perestreg = models.CharField(db_column='PerEstReg', max_length=1, verbose_name="Estado de Registro", default='A', editable=False)
+    perestreg = models.CharField(db_column='PerEstReg', max_length=1, verbose_name="Estado de Registro", default='A')
 
     class Meta:
         verbose_name = "Persona"
