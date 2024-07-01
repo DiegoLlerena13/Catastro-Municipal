@@ -74,3 +74,19 @@ class TipoPersonaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['tipvivestreg'].widget.attrs['readonly'] = True
 
+class TipoViviendaForm(forms.ModelForm):
+    class Meta:
+        model = TipoVivienda
+        fields = ['tipvivdes', 'tipvivestreg']
+        widgets = {
+            'tipvivdes': forms.TextInput(attrs={'class': 'form-control'}),
+            'tipvivestreg': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TipoViviendaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['tipvivestreg'].widget = forms.HiddenInput()
+            self.fields['tipvivestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['tipvivestreg'].widget.attrs['readonly'] = True
