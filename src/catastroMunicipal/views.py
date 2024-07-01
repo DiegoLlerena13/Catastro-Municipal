@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from .models import *
 from .forms import *
 
-
 # Create your views here.
 def base(request):
     return render(request, 'cm/base.html')
@@ -51,7 +50,9 @@ def municipio_create(request):
     if request.method == "POST":
         form = MunicipioForm(request.POST)
         if form.is_valid():
-            form.save()
+            municipio = form.save(commit=False)
+            municipio.munestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            municipio.save()
             return redirect('municipio_list')
     else:
         form = MunicipioForm()
