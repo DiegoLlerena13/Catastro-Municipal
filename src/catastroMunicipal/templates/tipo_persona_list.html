@@ -1,0 +1,29 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Lista de Tipos de Persona</h2>
+<a href="{% url 'tipo_persona_create' %}" class="btn btn-primary mb-2">Crear Nuevo Tipo de Persona</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tipo_persona in tipos_persona %}
+        <tr>
+            <td>{{ tipo_persona.tippercod }}</td>
+            <td>{{ tipo_persona.tipperdes }}</td>
+            <td>{{ tipo_persona.tipvivestreg }}</td>
+            <td>
+                <a href="{% url 'tipo_persona_update' tipo_persona.tippercod %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'tipo_persona_delete' tipo_persona.tippercod %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
