@@ -111,4 +111,32 @@ class ViviendaForm(forms.ModelForm):
             self.fields['vivestreg'].widget = forms.HiddenInput()
             self.fields['vivestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
-            self.fields['vivestreg'].widget.attrs['readonly'] = True
+            self.fields['vivestreg'].widget.attrs['readonly'] = True    
+
+class FamiliaForm(forms.ModelForm):
+    class Meta:
+        model = Familia
+        fields = ['famnom', 'famnumint', 'famestreg']
+
+        widgets = {
+            'famnom': forms.TextInput(attrs={'class': 'form-control'}),
+            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FamiliaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['famestreg'].widget = forms.HiddenInput()
+            self.fields['famestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['famestreg'].widget.attrs['readonly'] = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        famnumint = cleaned_data.get('famnumint')
+
+        if famnumint <= 0:
+            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
+
+        return cleaned_data
