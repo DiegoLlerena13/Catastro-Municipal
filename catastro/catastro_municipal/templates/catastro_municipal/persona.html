@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Persona{% endblock %}
+
+{% block content %}
+<h1 class="text-center mt-5 mb-5 text-primary">Persona</h1>
+    <div class="container">
+        <!-- Mostrar mensajes de flash -->
+          {% if messages %}
+            <div class="alert alert-warning mt-3" role="alert">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+        <div class="card shadow">
+            <div class="card-body">
+                <button class="btn btn-primary btn-sm" id="btn-insert" data-bs-toggle="modal" data-bs-target="#modalinsert">Insertar</button>
+                <div class="modal fade" id="modalinsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Insertar Datos</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="/persona" method="post">
+                            <label>CÓDIGO DE PERSONA</label>
+                            <input type="text" class="form-control mb-3" name="per_cod">
+                            <label>NOMBRE</label>
+                            <input type="text" class="form-control mb-3" name="per_nom">
+                            <label>APELLIDO PATERNO</label>
+                            <input type="text" class="form-control mb-3" name="per_ape_pat">
+                            <label>APELLIDO MATERNO</label>
+                            <input type="text" class="form-control mb-3" name="per_ape_mat">
+                            <label>CÓDIGO DE FAMILIA</label>
+                            <input type="text" class="form-control mb-3" name="fam_cod">
+                            <label>CÓDIGO DE TIPO PERSONA</label>
+                            <input type="text" class="form-control mb-3" name="tip_per_cod">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">INSERTAR</button>
+                        </div>
+                        </form>
+                      </div>
+                    </div>
+                </div>
+                <!--Tabla-->
+                <table class="table table-bordered">
+                    <thead>
+                        <th scope="col">CÓDIGO DE PERSONA</th>
+                        <th scope="col">NOMBRE</th>
+                        <th scope="col">APELLIDO PATERNO</th>
+                        <th scope="col">APELLIDO MATERNO</th>
+                        <th scope="col">CÓDIGO DE FAMILIA</th>
+                        <th scope="col">CÓDIGO DE TIPO PERSONA</th>
+                        <th scope="col">ESTADO DE REGISTRO</th>
+                        <th scope="col">EDIT</th>
+                        <th scope="col">DELETE</th>
+                    </thead>
+                    <tbody>
+                        {% for d in data %}
+                            <tr>
+                                <td>{{ d.PerCod }}</td>
+                                <td>{{ d.PerNom }}</td>
+                                <td>{{ d.PerApePat }}</td>
+                                <td>{{ d.PerApeMat }}</td>
+                                <td>{{ d.FamCod }}</td>
+                                <td>{{ d.TipPerCod }}</td>
+                                <td>{{ d.PerEstReg }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" id="btn-edit{{ d.PerCod }}" data-bs-toggle="modal" data-bs-target="#modal{{ d.PerCod }}">Edit</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ d.PerCod }}" data-per_cod="{{ d.PerCod }}" data-per_nom="{{ d.PerNom }}">Delete</button>
+                                </td>
+                            </tr>
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="modal{{ d.PerCod }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ d.PerCod }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel{{ d.PerCod }}">{{ d.PerNom }}</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/edit/{{ d.PerCod }}" method="post">
+                                                <label>CÓDIGO DE PERSONA</label>
+                                                <p>{{ d.PerCod }}</p>
+                                                <label>NOMBRE</label>
+                                                <input type="text" class="form-control mb-3" name="per_nom" value="{{ d.PerNom }}">
+                                                <label>APELLIDO PATERNO</label>
+                                                <input type="text" class="form-control mb-3" name="per_ape_pat" value="{{ d.PerApePat }}">
+                                                <label>APELLIDO MATERNO</label>
+                                                <input type="text" class="form-control mb-3" name="per_ape_mat" value="{{ d.PerApeMat }}">
+                                                <label>CÓDIGO DE FAMILIA</label>
+                                                <input type="text" class="form-control mb-3" name="fam_cod" value="{{ d.FamCod }}">
+                                                <label>CÓDIGO DE TIPO PERSONA</label>
+                                                <input type="text" class="form-control mb-3" name="tip_per_cod" value="{{ d.TipPerCod }}">
+                                                <label>ESTADO DE REGISTRO</label>
+                                                <p>{{ d.PerEstReg }}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" name="action" value="edit" class="btn btn-primary">Save Changes</button>
+                                            <button type="submit" name="action" value="activar" class="btn btn-primary">Activar</button>
+                                            <button type="submit" name="action" value="inactivar" class="btn btn-danger">Inactivar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ d.PerCod }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ d.PerCod }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="deleteModalLabel{{ d.PerCod }}">Confirmar Eliminación</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <p>¿Desea eliminar este registro?</p>
+                                                <label>CÓDIGO DE PERSONA</label>
+                                                <p id="modalPerCod{{ d.PerCod }}">{{ d.PerCod }}</p>
+                                                <label>NOMBRE</label>
+                                                <p id="modalPerNom{{ d.PerCod }}">{{ d.PerNom }}</p>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <a href="/delete/{{ d.PerCod }}" class="btn btn-danger">Aceptar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

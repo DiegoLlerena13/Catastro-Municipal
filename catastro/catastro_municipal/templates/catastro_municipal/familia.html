@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Familia{% endblock %}
+
+{% block content %}
+<h1 class="text-center mt-5 mb-5 text-primary">FAMILIA</h1>
+    <div class="container">
+        {% if messages %}
+            <div class="alert alert-warning mt-3" role="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card shadow">
+            <div class="card-body">
+                <button class="btn btn-primary btn-sm" id="btn-insert" data-bs-toggle="modal" data-bs-target="#modalinsert">Insertar</button>
+                <div class="modal fade" id="modalinsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Insertar Datos</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="/familia" method="post">
+                            <label>CÓDIGO DE FAMILIA</label>
+                            <input type="text" class="form-control mb-3" name="famcod">
+                            <label>NOMBRE DE FAMILIA</label>
+                            <input type="text" class="form-control mb-3" name="famnom">
+                            <label>NÚMERO DE INTEGRANTES</label>
+                            <input type="text" class="form-control mb-3" name="famnumint">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">INSERTAR</button>
+                        </div>
+                        </form>
+                      </div>
+                    </div>
+                </div>
+                <!--Tabla-->
+                <table class="table table-bordered">
+                    <thead>
+                        <th scope="col">CÓDIGO DE FAMILIA</th>
+                        <th scope="col">NOMBRE DE FAMILIA</th>
+                        <th scope="col">NÚMERO DE INTEGRANTES</th>
+                        <th scope="col">ESTADO DE REGISTRO</th>
+                        <th scope="col">EDIT</th>
+                        <th scope="col">DELETE</th>
+                    </thead>
+                    <tbody>
+                        {% for d in data %}
+                            <tr>
+                                <td>{{ d.FamCod }}</td>
+                                <td>{{ d.FamNom }}</td>
+                                <td>{{ d.FamNumInt }}</td>
+                                <td>{{ d.FamEstReg }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" id="btn-edit{{ d.FamCod }}" data-bs-toggle="modal" data-bs-target="#modal{{ d.FamCod }}">Edit</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ d.FamCod }}" data-famcod="{{ d.FamCod }}" data-famnom="{{ d.FamNom }}">Delete</button>
+                                </td>
+                            </tr>
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="modal{{ d.FamCod }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ d.FamCod }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel{{ d.FamCod }}">{{ d.FamNom }}</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/edit/{{ d.FamCod }}" method="post">
+                                                <label>CÓDIGO DE FAMILIA</label>
+                                                <p>{{ d.FamCod }}</p>
+                                                <label>NOMBRE DE FAMILIA</label>
+                                                <input type="text" class="form-control mb-3" name="famnom" value="{{ d.FamNom }}">
+                                                <label>NÚMERO DE INTEGRANTES</label>
+                                                <input type="text" class="form-control mb-3" name="famnumint" value="{{ d.FamNumInt }}">
+                                                <label>ESTADO DE REGISTRO</label>
+                                                <p>{{ d.FamEstReg }}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" name="action" value="edit" class="btn btn-primary">Save Changes</button>
+                                            <button type="submit" name="action" value="activar" class="btn btn-primary"> Activar</button>
+                                            <button type="submit" name="action" value="inactivar" class="btn btn-danger">Inactivar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ d.FamCod }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ d.FamCod }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="deleteModalLabel{{ d.FamCod }}">Confirmar Eliminación</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <p>¿Desea eliminar este registro?</p>
+                                                <label>CÓDIGO DE FAMILIA</label>
+                                                <p id="modalFamCod{{ d.FamCod }}">{{ d.FamCod }}</p>
+                                                <label>NOMBRE DE FAMILIA</label>
+                                                <p id="modalFamNom{{ d.FamCod }}">{{ d.FamNom }}</p>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <a href="/delete/{{ d.FamCod }}" class="btn btn-danger">Aceptar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

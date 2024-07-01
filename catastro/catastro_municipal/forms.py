@@ -6,7 +6,7 @@ class ZonaUrbanaForm(forms.ModelForm):
         model = ZonaUrbana
         fields = ['codzona', 'nomzona']
 
-class OtroModeloForm(forms.ModelForm):
+class RegionForm(forms.ModelForm):
     class Meta:
         model = OtroModelo
         fields = ['campo1', 'campo2']

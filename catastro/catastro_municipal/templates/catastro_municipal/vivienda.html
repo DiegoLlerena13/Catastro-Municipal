@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Vivienda{% endblock %}
+
+{% block content %}
+<h1 class="text-center mt-5 mb-5 text-primary">Vivienda</h1>
+    <div class="container">
+        <!-- Mostrar mensajes de flash -->
+
+          {% if messages %}
+            <div class="alert alert-warning mt-3" role="alert">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+        <div class="card shadow">
+            <div class="card-body">
+                <button class="btn btn-primary btn-sm" id="btn-insert" data-bs-toggle="modal" data-bs-target="#modalinsert">Insertar</button>
+                <div class="modal fade" id="modalinsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Insertar Datos</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="/vivienda" method="post">
+                            <label>CÓDIGO DE VIVIENDA</label>
+                            <input type="text" class="form-control mb-3" name="codviv">
+                            <label>CALLE</label>
+                            <input type="text" class="form-control mb-3" name="vivcal">
+                            <label>NÚMERO</label>
+                            <input type="text" class="form-control mb-3" name="vivnum">
+                            <label>CÓDIGO POSTAL</label>
+                            <input type="text" class="form-control mb-3" name="vivcodpos">
+                            <label>METROS</label>
+                            <input type="text" class="form-control mb-3" name="vivmet">
+                            <label>OCUPACIÓN</label>
+                            <input type="text" class="form-control mb-3" name="vivocu">
+                            <label>CÓDIGO DE ZONA</label>
+                            <input type="text" class="form-control mb-3" name="zoncod">
+                            <label>CÓDIGO TIPO DE VIVIENDA</label>
+                            <input type="text" class="form-control mb-3" name="tipvivcod">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">INSERTAR</button>
+                        </div>
+                        </form>
+                      </div>
+                    </div>
+                </div>
+                <!--Tabla-->
+                <table class="table table-bordered">
+                    <thead>
+                        <th scope="col">CÓDIGO DE VIVIENDA</th>
+                        <th scope="col">CALLE</th>
+                        <th scope="col">NÚMERO</th>
+                        <th scope="col">CÓDIGO POSTAL</th>
+                        <th scope="col">METROS</th>
+                        <th scope="col">OCUPACIÓN</th>
+                        <th scope="col">CÓDIGO DE ZONA</th>
+                        <th scope="col">CÓDIGO TIPO DE VIVIENDA</th>
+                        <th scope="col">ESTADO DE REGISTRO</th>
+                        <th scope="col">EDIT</th>
+                        <th scope="col">DELETE</th>
+                    </thead>
+                    <tbody>
+                        {% for d in data %}
+                            <tr>
+                                <td>{{ d.VivCod }}</td>
+                                <td>{{ d.VivCal }}</td>
+                                <td>{{ d.VivNum }}</td>
+                                <td>{{ d.VivCodPos }}</td>
+                                <td>{{ d.VivMet }}</td>
+                                <td>{{ d.VivOcu }}</td>
+                                <td>{{ d.ZonCod }}</td>
+                                <td>{{ d.TipVivCod }}</td>
+                                <td>{{ d.VivEstReg }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" id="btn-edit{{ d.VivCod }}" data-bs-toggle="modal" data-bs-target="#modal{{ d.VivCod }}">Edit</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ d.VivCod }}" data-regcod="{{ d.VivCod }}" data-regnom="{{ d.VivNom }}">Delete</button>
+                                </td>
+                            </tr>
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="modal{{ d.VivCod }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ d.VivCod }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel{{ d.VivCod }}">Editar {{ d.VivNom }}</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/edit/{{ d.VivCod }}" method="post">
+                                                <label>CÓDIGO DE VIVIENDA</label>
+                                                <p>{{ d.VivCod }}</p>
+                                                <label>CALLE</label>
+                                                <input type="text" class="form-control mb-3" name="vivcal" value="{{ d.VivCal }}">
+                                                <label>NÚMERO</label>
+                                                <input type="text" class="form-control mb-3" name="vivnum" value="{{ d.VivNum }}">
+                                                <label>CÓDIGO POSTAL</label>
+                                                <input type="text" class="form-control mb-3" name="vivcodpos" value="{{ d.VivCodPos }}">
+                                                <label>METROS</label>
+                                                <input type="text" class="form-control mb-3" name="vivmet" value="{{ d.VivMet }}">
+                                                <label>OCUPACIÓN</label>
+                                                <input type="text" class="form-control mb-3" name="vivocu" value="{{ d.VivOcu }}">
+                                                <label>CÓDIGO DE ZONA</label>
+                                                <input type="text" class="form-control mb-3" name="zoncod" value="{{ d.ZonCod }}">
+                                                <label>CÓDIGO TIPO DE VIVIENDA</label>
+                                                <input type="text" class="form-control mb-3" name="tipvivcod" value="{{ d.TipVivCod }}">
+                                                <label>ESTADO DE REGISTRO</label>
+                                                <p>{{ d.VivEstReg }}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" name="action" value="edit" class="btn btn-primary">Guardar Cambios</button>
+                                            <button type="submit" name="action" value="activar" class="btn btn-primary">Activar</button>
+                                            <button type="submit" name="action" value="inactivar" class="btn btn-danger">Inactivar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ d.VivCod }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ d.VivCod }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="deleteModalLabel{{ d.VivCod }}">Confirmar Eliminación</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <p>¿Desea eliminar este registro?</p>
+                                                <label>CÓDIGO DE VIVIENDA</label>
+                                                <p id="modalVivCod{{ d.VivCod }}">{{ d.VivCod }}</p>
+                                                <label>CALLE</label>
+                                                <p id="modalVivCal{{ d.VivCod }}">{{ d.VivCal }}</p>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <a href="/delete/{{ d.VivCod }}" class="btn btn-danger">Aceptar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
