@@ -1,4 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'cm/base.html' %}
 
 {% block content %}
-<h1>Lista de Propietarios</h1>
+<h2>Lista de Propietarios</h2>
+<a href="{% url 'propietario_create' %}" class="btn btn-primary mb-2">Crear Nuevo Propietario</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Ingresos Familiares</th>
+            <th>Persona</th>
+            <th>Familia</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for propietario in propietarios %}
+        <tr>
+            <td>{{ propietario.procod }}</td>
+            <td>{{ propietario.promoningfam }}</td>
+            <td>{{ propietario.percod }}</td>
+            <td>{{ propietario.famcod }}</td>
+            <td>{{ propietario.proestreg }}</td>
+            <td>
+                <a href="{% url 'propietario_update' propietario.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'propietario_delete' propietario.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

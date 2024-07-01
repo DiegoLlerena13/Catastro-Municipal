@@ -192,3 +192,50 @@ class PagoTributarioForm(forms.ModelForm):
             self.fields['pagtriestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
             self.fields['pagtriestreg'].widget.attrs['readonly'] = True
+
+class FamiliaForm(forms.ModelForm):
+    class Meta:
+        model = Familia
+        fields = ['famnom', 'famnumint', 'famestreg']
+        widgets = {
+            'famnom': forms.TextInput(attrs={'class': 'form-control'}),
+            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famestreg': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def clean_famnumint(self):
+        # Validar que famnumint no sea cero ni negativo
+        famnumint = self.cleaned_data['famnumint']
+        if famnumint <= 0:
+            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
+        return famnumint
+    
+class PropietarioForm(forms.ModelForm):
+    class Meta:
+        model = Propietario
+        fields = ['promoningfam', 'percod', 'famcod', 'proestreg']
+        widgets = {
+            'promoningfam': forms.NumberInput(attrs={'class': 'form-control'}),
+            'percod': forms.Select(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'proestreg': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def clean_promoningfam(self):
+        # Validar que promoningfam no sea menor que 0
+        promoningfam = self.cleaned_data['promoningfam']
+        if promoningfam < 0:
+            raise forms.ValidationError("El monto de ingreso familiar debe ser mayor o igual que cero.")
+        return promoningfam
+
+    def clean(self):
+        cleaned_data = super().clean()
+        famcod = cleaned_data.get('famcod')
+        percod = cleaned_data.get('percod')
+
+        # Validar que solo puede haber un propietario por familia
+        if famcod and percod:
+            if Propietario.objects.filter(famcod=famcod, percod=percod).exists() and not self.instance.pk:
+                raise forms.ValidationError("Ya existe un propietario para esta familia.")
+
+        return cleaned_data
