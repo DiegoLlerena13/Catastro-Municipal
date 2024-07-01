@@ -148,3 +148,29 @@ class PersonaForm(forms.ModelForm):
                 raise forms.ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. No se pueden agregar más.")
 
         return cleaned_data
+from django import forms
+from .models import Casa
+
+class CasaForm(forms.ModelForm):
+    class Meta:
+        model = Casa
+        fields = ['vivcod', 'casesc', 'cascodblo', 'caspla', 'casnumpue', 'casmet', 'famcod', 'casestreg', 'casocu']
+        widgets = {
+            'vivcod': forms.Select(attrs={'class': 'form-control'}),
+            'casesc': forms.NumberInput(attrs={'class': 'form-control'}),
+            'cascodblo': forms.TextInput(attrs={'class': 'form-control'}),
+            'caspla': forms.NumberInput(attrs={'class': 'form-control'}),
+            'casnumpue': forms.NumberInput(attrs={'class': 'form-control'}),
+            'casmet': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'casestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'casocu': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CasaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['casestreg'].widget = forms.HiddenInput()
+            self.fields['casestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['casestreg'].widget.attrs['readonly'] = True
