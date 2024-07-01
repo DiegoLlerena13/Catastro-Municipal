@@ -23,11 +23,12 @@
         .nav-link:hover {
             color: #d4d4d4 !important;
         }
-        .container {
-            padding-top: 20px;
-        }
         .nav-item {
             margin-right: 10px;
+        }
+        .nav-item.active .nav-link {
+            background-color: #2e7d4e !important; /* Color más oscuro para el elemento activo */
+            color: #ffffff !important;
         }
     </style>
 </head>
@@ -38,54 +39,37 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <!-- 1 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'region_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'region_list' %}">Regiones</a> 
                 </li>
-                <li class="nav-item">
-                    <!-- 2 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'municipio_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'municipio_list' %}">Municipios</a>
                 </li>
-                <li class="nav-item">
-                    <!-- 3 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'zona_urbana_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'zona_urbana_list' %}">Zona Urbana</a>
                 </li>
-                <!-- Tipo Vivienda -->
-                <li class="nav-item">
-                    <!-- 4 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'tipo_vivienda_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'tipo_vivienda_list' %}">Tipo de Vivienda</a>
                 </li>
-                <!-- vivienda  -->
-                <li class="nav-item">
-                    <!-- 5 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'vivienda_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'vivienda_list' %}">Vivienda</a>
                 </li>
-                <!-- familia  -->
-                <li class="nav-item">
-                    <!-- 6 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'familia_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'familia_list' %}">Familia</a>
                 </li>
-                <!-- persona  -->
-                <li class="nav-item">
-                    <!-- 7 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'persona_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'persona_list' %}">Persona</a>
                 </li>
-                <!-- tipo persona  -->
-                <li class="nav-item">
-                    <!-- 8 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'tipo_persona_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'tipo_persona_list' %}">Tipo de Persona</a>
                 </li>
-                <!-- casa  -->
-                <li class="nav-item">
-                    <!-- 9 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'casa_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'casa_list' %}">Casa</a>
                 </li>
-                <li class="nav-item">
-                    <!-- 10 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'pago_tributario_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'pago_tributario_list' %}">Pago Tributario</a>
                 </li>
-                <li class="nav-item">
-                    <!-- 11 -->
+                <li class="nav-item {% if request.resolver_match.url_name == 'propietario_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'propietario_list' %}">Propietario</a>
                 </li>
             </ul>
