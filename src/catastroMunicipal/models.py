@@ -13,7 +13,7 @@ class Region(models.Model):
         verbose_name_plural = "Regiones"
         db_table = 'region'
 
-    def _str_(self):
+    def __str__(self):
         return self.regnom
 
 class Municipio(models.Model):
@@ -29,7 +29,7 @@ class Municipio(models.Model):
         verbose_name_plural = "Municipios"
         db_table = 'municipio'
 
-    def _str_(self):
+    def __str__(self):
         return self.munnom
 
 class ZonaUrbana(models.Model):
@@ -43,7 +43,7 @@ class ZonaUrbana(models.Model):
         verbose_name_plural = "Zonas Urbanas"
         db_table = 'zona_urbana'
 
-    def _str_(self):
+    def __str__(self):
         return self.zonnom
 
 class TipoVivienda(models.Model):
@@ -56,7 +56,7 @@ class TipoVivienda(models.Model):
         verbose_name_plural = "Tipos de Vivienda"
         db_table = 'tipo_vivienda'
 
-    def _str_(self):
+    def __str__(self):
         return self.tipvivdes
 
 class Vivienda(models.Model):
@@ -75,7 +75,7 @@ class Vivienda(models.Model):
         db_table = 'vivienda'
         unique_together = [['vivcal', 'vivnum', 'vivcodpos']]  # Define la combinación única de campos
 
-    def _str_(self):
+    def __str__(self):
         return f"Vivienda {self.vivcod}"
 
     def clean(self):
@@ -106,7 +106,7 @@ class Familia(models.Model):
         verbose_name_plural = "Familias"
         db_table = 'familia'
 
-    def _str_(self):
+    def __str__(self):
         return self.famnom
 
     def clean(self):
@@ -129,7 +129,7 @@ class TipoPersona(models.Model):
         verbose_name_plural = "Tipos de Persona"
         db_table = 'tipo_persona'
 
-    def _str_(self):
+    def __str__(self):
         return self.tipperdes
 
 class Persona(models.Model):
@@ -146,7 +146,7 @@ class Persona(models.Model):
         verbose_name_plural = "Personas"
         db_table = 'persona'
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.pernom} {self.perapepat} {self.perapemat}"
 
     def clean(self):
@@ -167,8 +167,8 @@ class Casa(models.Model):
     casesc = models.IntegerField(db_column='CasEsc', null=True, blank=True, verbose_name="Escalera")
     cascodblo = models.CharField(db_column='CasCodBlo', max_length=1, null=True, blank=True, verbose_name="Bloque")
     caspla = models.IntegerField(db_column='CasPla', null=True, blank=True, verbose_name="Planta")
-    casnumpue = models.IntegerField(db_column='CasNumPue', null=True, blank=True, verbose_name="Número de Puertas")
-    casmet = models.DecimalField(db_column='CasMet', max_digits=5, decimal_places=0, verbose_name="Metros")
+    casnumpue = models.IntegerField(db_column='CasNumPue', null=True, blank=True, verbose_name="Número de Puerta")
+    casmet = models.DecimalField(db_column='CasMet', max_digits=5, decimal_places=0, null=True, blank=True, verbose_name="Metros")
     famcod = models.ForeignKey('Familia', on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
     casestreg = models.CharField(db_column='CasEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
     casocu = models.CharField(db_column='CasOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="¿Está ocupada?")
@@ -178,27 +178,20 @@ class Casa(models.Model):
         verbose_name_plural = "Casas"
         db_table = 'casa'
 
-    def _str_(self):
+    def __str__(self):
         return f"Casa {self.cascod}"
 
-    def validate_unique_familia(self):
-        # Verificar si hay otra casa asociada a la misma familia
-        existing_casas = Casa.objects.filter(famcod=self.famcod)
-        if self.pk:
-            existing_casas = existing_casas.exclude(pk=self.pk)  # Excluir la instancia actual al editar
-        if existing_casas.exists():
-            raise ValidationError('Esta familia ya tiene asignada una casa.')
-
     def clean(self):
-        # Validar que solo puede haber un propietario por familia
-        if Propietario.objects.filter(famcod=self.famcod).exists() and self.pk is None:
-            raise ValidationError("Ya existe un propietario para esta familia.")
-
-        self.validate_unique_familia()
+        # Validar que solo una familia puede tener una casa
+        existing_casa = Casa.objects.filter(famcod=self.famcod)
+        if self.pk:
+            existing_casa = existing_casa.exclude(pk=self.pk)  # Excluir la instancia actual al editar
+        if existing_casa.exists():
+            raise ValidationError("Esta familia ya tiene asignada una casa.")
 
     def save(self, *args, **kwargs):
         try:
-            self.validate_unique_familia()
+            self.full_clean()  # Llama a clean() antes de guardar para validar
             super().save(*args, **kwargs)
         except ValidationError as e:
             # Imprimir el error pero no redirigir a la página de error
@@ -215,7 +208,7 @@ class PagoTributario(models.Model):
         verbose_name_plural = "Pagos Tributarios"
         db_table = 'pago_tributario'
 
-    def _str_(self):
+    def __str__(self):
         return f"Pago {self.pagtricod}"
 
 class Propietario(models.Model):
@@ -231,7 +224,7 @@ class Propietario(models.Model):
         verbose_name_plural = "Propietarios"
         db_table = 'propietario'
 
-    def _str_(self):
+    def __str__(self):
         return f"Propietario {self.procod}"
 
     def clean(self):
