@@ -241,3 +241,4 @@ class Propietario(models.Model):
         self.propagtri = self.promoningfam * Decimal('0.1')  # Multiplicar por 0.1 como Decimal
 
         super().save(*args, **kwargs)
+

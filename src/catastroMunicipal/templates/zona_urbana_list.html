@@ -1,0 +1,31 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Lista de Zonas Urbanas</h2>
+<a href="{% url 'zona_urbana_create' %}" class="btn btn-primary mb-2">Crear Nueva Zona Urbana</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Municipio</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for zona in zonas_urbanas %}
+        <tr>
+            <td>{{ zona.zoncod }}</td>
+            <td>{{ zona.zonnom }}</td>
+            <td>{{ zona.muncod }}</td>
+            <td>{{ zona.zonestreg }}</td>
+            <td>
+                <a href="{% url 'zona_urbana_update' zona.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'zona_urbana_delete' zona.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
