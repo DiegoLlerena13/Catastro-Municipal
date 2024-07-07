@@ -155,7 +155,7 @@ class Persona(models.Model):
         num_integrantes_familia = self.famcod.famnumint  # Obtener el número máximo de integrantes de la familia
 
         if integrantes_actuales >= num_integrantes_familia:
-            raise ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. No se pueden agregar más.")
+            raise ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. El número de miembros indicados esta correcto, no se puede agregar más")
 
     def save(self, *args, **kwargs):
         self.full_clean()  # Realizar la validación antes de guardar
