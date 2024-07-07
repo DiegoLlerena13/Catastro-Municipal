@@ -80,20 +80,15 @@ class Vivienda(models.Model):
 
     def clean(self):
         # Validar que vivnum y vivcodpos no sean menores que 0
-        if self.vivnum < 0 or self.vivcodpos < 0:
+        if self.vivnum <= 0 or self.vivcodpos <= 0:
             raise ValidationError("El número de vivienda y el código postal deben ser mayores o iguales que cero.")
 
         # Validar que no exista otra vivienda con el mismo nombre de calle (ignorando mayúsculas y minúsculas)
-        vivcal_lower = slugify(self.vivcal)  # Convertir a slug para normalizar
-        existing_vivienda = Vivienda.objects.filter(vivcal__iexact=vivcal_lower, vivnum=self.vivnum, vivcodpos=self.vivcodpos)
+        existing_vivienda = Vivienda.objects.filter(vivcal__iexact=self.vivcal, vivnum=self.vivnum, vivcodpos=self.vivcodpos)
         if self.pk:
             existing_vivienda = existing_vivienda.exclude(pk=self.pk)  # Excluir la instancia actual al editar
         if existing_vivienda.exists():
             raise ValidationError("Ya existe una vivienda con el mismo nombre de calle, número y código postal.")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()  # Llama a clean() antes de guardar para validar
-        super().save(*args, **kwargs)
 
 class Familia(models.Model):
     famcod = models.AutoField(db_column='FamCod', primary_key=True, verbose_name="Código")
@@ -114,9 +109,6 @@ class Familia(models.Model):
         if self.famnumint <= 0:
             raise ValidationError("El número de integrantes debe ser mayor que cero.")
 
-    def save(self, *args, **kwargs):
-        self.full_clean()  # Realizar la validación antes de guardar
-        super().save(*args, **kwargs)
 
 
 class TipoPersona(models.Model):
