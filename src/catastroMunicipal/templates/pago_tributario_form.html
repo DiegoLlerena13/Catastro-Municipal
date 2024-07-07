@@ -1,7 +1,7 @@
 {% extends 'cm/base.html' %}
 
 {% block content %}
-<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Pago Tributario</h2>
+<h2>{% if pago_tributario.pk %}Editar{% else %}Crear{% endif %} Pago Tributario</h2>
 <form method="post" class="form">
     {% csrf_token %}
     <div class="form-group">
@@ -12,7 +12,7 @@
         {{ form.cascod.label_tag }}
         {{ form.cascod }}
     </div>
-    {% if form.instance.pk %}
+    {% if pago_tributario.pk %}
         <div class="form-group">
             {{ form.pagtriestreg.label_tag }}
             {{ form.pagtriestreg }}
@@ -21,7 +21,7 @@
     {% else %}
         {{ form.pagtriestreg }}
     {% endif %}
-    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <button type="submit" class="btn btn-success">{% if pago_tributario.pk %}Actualizar{% else %}Crear{% endif %}</button>
     <a href="{% url 'pago_tributario_list' %}" class="btn btn-secondary">Cancelar</a>
 </form>
 
@@ -34,5 +34,5 @@
             pagtriestregField.value = 'A';
         }
     }
-    </script>
+</script>
 {% endblock %}

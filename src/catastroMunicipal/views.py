@@ -372,8 +372,8 @@ def pago_tributario_update(request, pk):
             form.save()
             return redirect('pago_tributario_list')
     else:
-        form = PagoTributarioForm(instance=pago_tributario)
-    return render(request, 'pago_tributario_form.html', {'form': form})
+        form = PagoTributarioForm(instance=pago_tributario)  # Pasa la instancia al formulario
+    return render(request, 'pago_tributario_form.html', {'form': form, 'pago_tributario': pago_tributario})
 
 def pago_tributario_delete(request, pk):
     pago_tributario = get_object_or_404(PagoTributario, pk=pk)
