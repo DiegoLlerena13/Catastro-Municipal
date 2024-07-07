@@ -113,6 +113,34 @@ class ViviendaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['vivestreg'].widget.attrs['readonly'] = True    
 
+class FamiliaForm(forms.ModelForm):
+    class Meta:
+        model = Familia
+        fields = ['famnom', 'famnumint', 'famestreg']
+
+        widgets = {
+            'famnom': forms.TextInput(attrs={'class': 'form-control'}),
+            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FamiliaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['famestreg'].widget = forms.HiddenInput()
+            self.fields['famestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['famestreg'].widget.attrs['readonly'] = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        famnumint = cleaned_data.get('famnumint')
+
+        if famnumint <= 0:
+            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
+
+        return cleaned_data
+    
 class PersonaForm(forms.ModelForm):
     class Meta:
         model = Persona
@@ -148,8 +176,6 @@ class PersonaForm(forms.ModelForm):
                 raise forms.ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. No se pueden agregar más.")
 
         return cleaned_data
-from django import forms
-from .models import Casa
 
 class CasaForm(forms.ModelForm):
     class Meta:
@@ -192,23 +218,6 @@ class PagoTributarioForm(forms.ModelForm):
             self.fields['pagtriestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
             self.fields['pagtriestreg'].widget.attrs['readonly'] = True
-
-class FamiliaForm(forms.ModelForm):
-    class Meta:
-        model = Familia
-        fields = ['famnom', 'famnumint', 'famestreg']
-        widgets = {
-            'famnom': forms.TextInput(attrs={'class': 'form-control'}),
-            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
-            'famestreg': forms.Select(attrs={'class': 'form-control'}),
-        }
-
-    def clean_famnumint(self):
-        # Validar que famnumint no sea cero ni negativo
-        famnumint = self.cleaned_data['famnumint']
-        if famnumint <= 0:
-            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
-        return famnumint
     
 class PropietarioForm(forms.ModelForm):
     class Meta:
@@ -233,9 +242,13 @@ class PropietarioForm(forms.ModelForm):
         famcod = cleaned_data.get('famcod')
         percod = cleaned_data.get('percod')
 
+        # Validar que la persona tiene el tipo "Propietario"
+        if percod and percod.tipo_persona != "Propietario":
+            raise forms.ValidationError("La persona seleccionada no tiene el tipo de persona 'Propietario'.")
+
         # Validar que solo puede haber un propietario por familia
         if famcod and percod:
-            if Propietario.objects.filter(famcod=famcod, percod=percod).exists() and not self.instance.pk:
+            if Propietario.objects.filter(famcod=famcod).exists() and not self.instance.pk:
                 raise forms.ValidationError("Ya existe un propietario para esta familia.")
 
         return cleaned_data

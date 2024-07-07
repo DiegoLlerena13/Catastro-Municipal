@@ -12,8 +12,27 @@
         {{ form.cascod.label_tag }}
         {{ form.cascod }}
     </div>
-    {{ form.pagtriestreg }}
+    {% if form.instance.pk %}
+        <div class="form-group">
+            {{ form.pagtriestreg.label_tag }}
+            {{ form.pagtriestreg }}
+        </div>
+        <button type="button" class="btn btn-warning" onclick="togglePagtriestreg()">Cambiar Estado</button>
+    {% else %}
+        {{ form.pagtriestreg }}
+    {% endif %}
     <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
     <a href="{% url 'pago_tributario_list' %}" class="btn btn-secondary">Cancelar</a>
 </form>
+
+<script>
+    function togglePagtriestreg() {
+        var pagtriestregField = document.getElementById('id_pagtriestreg');
+        if (pagtriestregField.value === 'A') {
+            pagtriestregField.value = 'I';
+        } else {
+            pagtriestregField.value = 'A';
+        }
+    }
+    </script>
 {% endblock %}
