@@ -29,7 +29,7 @@ class MunicipioForm(forms.ModelForm):
             'munnom': forms.TextInput(attrs={'class': 'form-control'}),
             'munpreanu': forms.NumberInput(attrs={'class': 'form-control'}),
             'munnumviv': forms.NumberInput(attrs={'class': 'form-control'}),
-            'regcod': forms.Select(attrs={'class': 'form-control'}),
+            'regcod': forms.Select(attrs={'class': 'form-control select2'}),
             'munestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
