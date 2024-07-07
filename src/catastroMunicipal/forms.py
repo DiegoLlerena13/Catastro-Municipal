@@ -1,5 +1,8 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import *
+from decimal import Decimal
+from django.utils.html import format_html
 
 class RegionForm(forms.ModelForm):
     class Meta:
@@ -113,6 +116,34 @@ class ViviendaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['vivestreg'].widget.attrs['readonly'] = True    
 
+class FamiliaForm(forms.ModelForm):
+    class Meta:
+        model = Familia
+        fields = ['famnom', 'famnumint', 'famestreg']
+
+        widgets = {
+            'famnom': forms.TextInput(attrs={'class': 'form-control'}),
+            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FamiliaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['famestreg'].widget = forms.HiddenInput()
+            self.fields['famestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['famestreg'].widget.attrs['readonly'] = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        famnumint = cleaned_data.get('famnumint')
+
+        if famnumint <= 0:
+            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
+
+        return cleaned_data
+    
 class PersonaForm(forms.ModelForm):
     class Meta:
         model = Persona
@@ -148,3 +179,89 @@ class PersonaForm(forms.ModelForm):
                 raise forms.ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. No se pueden agregar más.")
 
         return cleaned_data
+
+class CasaForm(forms.ModelForm):
+    class Meta:
+        model = Casa
+        fields = ['vivcod', 'casesc', 'cascodblo', 'caspla', 'casnumpue', 'casmet', 'famcod', 'casestreg', 'casocu']
+        widgets = {
+            'vivcod': forms.Select(attrs={'class': 'form-control'}),
+            'casesc': forms.NumberInput(attrs={'class': 'form-control'}),
+            'cascodblo': forms.TextInput(attrs={'class': 'form-control'}),
+            'caspla': forms.NumberInput(attrs={'class': 'form-control'}),
+            'casnumpue': forms.NumberInput(attrs={'class': 'form-control'}),
+            'casmet': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'casestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'casocu': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CasaForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['casestreg'].widget = forms.HiddenInput()
+            self.fields['casestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['casestreg'].widget.attrs['readonly'] = True
+
+class PagoTributarioForm(forms.ModelForm):
+    class Meta:
+        model = PagoTributario
+        fields = ['pagtrifec', 'cascod', 'pagtriestreg']
+        widgets = {
+            'pagtrifec': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'cascod': forms.Select(attrs={'class': 'form-control'}),
+            'pagtriestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PagoTributarioForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['pagtriestreg'].widget = forms.HiddenInput()
+            self.fields['pagtriestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['pagtriestreg'].widget.attrs['readonly'] = True
+    
+class PropietarioForm(forms.ModelForm):
+    class Meta:
+        model = Propietario
+        fields = ['promoningfam', 'percod', 'famcod', 'proestreg']
+        widgets = {
+            'promoningfam': forms.NumberInput(attrs={'class': 'form-control'}),
+            'percod': forms.Select(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'proestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PropietarioForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['proestreg'].widget = forms.HiddenInput()
+            self.fields['proestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['proestreg'].widget.attrs['readonly'] = True
+            
+    def clean_promoningfam(self):
+        promoningfam = self.cleaned_data['promoningfam']
+        if promoningfam <= Decimal('0'):
+            raise forms.ValidationError("El monto de ingreso familiar debe ser mayor que cero.")
+        return promoningfam
+
+    def clean(self):
+        cleaned_data = super().clean()
+        famcod = cleaned_data.get('famcod')
+        percod = cleaned_data.get('percod')
+
+        # Validar que la persona tiene el tipo "Propietario"
+        if percod and percod.tippercod.tipperdes != "Propietario":
+            raise forms.ValidationError("La persona seleccionada no tiene el tipo de persona 'Propietario'.")
+
+        # Validar que solo puede haber un propietario por familia
+        if famcod and Propietario.objects.filter(famcod=famcod).exists() and not self.instance.pk:
+            raise forms.ValidationError("Ya existe un propietario para esta familia.")
+
+        # Validar que la persona no sea propietario de más de una familia
+        if percod and Propietario.objects.filter(percod=percod).exists() and not self.instance.pk:
+            raise forms.ValidationError("La persona seleccionada ya es propietario de otra familia.")
+        return cleaned_data
+    
