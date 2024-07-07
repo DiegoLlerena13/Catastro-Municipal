@@ -229,16 +229,21 @@ class Propietario(models.Model):
 
     def clean(self):
         # Validar que promoningfam no sea menor que 0
-        if self.promoningfam < Decimal('0'):
-            raise ValidationError("El monto de ingreso familiar debe ser mayor o igual que cero.")
+        if self.promoningfam <= Decimal('0'):
+            raise ValidationError("El monto de ingreso familiar debe ser mayor que cero.")
 
         # Validar que solo puede haber un propietario por familia
         if Propietario.objects.filter(famcod=self.famcod).exists() and self.pk is None:
             raise ValidationError("Ya existe un propietario para esta familia.")
 
+        # Validar que la persona tiene el tipo "Propietario"
+        if self.percod.tippercod.tipperdes != "Propietario":
+            raise ValidationError("La persona seleccionada no tiene el tipo de persona 'Propietario'.")
+
     def save(self, *args, **kwargs):
         # Calcular el pago tributario
         self.propagtri = self.promoningfam * Decimal('0.1')  # Multiplicar por 0.1 como Decimal
 
+        self.full_clean()  # Validar antes de guardar
         super().save(*args, **kwargs)
 

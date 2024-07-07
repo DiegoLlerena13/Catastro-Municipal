@@ -16,11 +16,16 @@
         {{ form.famcod.label_tag }}
         {{ form.famcod }}
     </div>
+    {% if form.instance.pk %}
     <div class="form-group">
         {{ form.proestreg.label_tag }}
         {{ form.proestreg }}
     </div>
-    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
-    <a href="{% url 'propietario_list' %}" class="btn btn-secondary">Cancelar</a>
+    <button type="button" class="btn btn-warning" onclick="togglePorestreg()">Cambiar Estado</button>
+{% else %}
+    {{ form.prostreg }}
+{% endif %}
+<button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+<a href="{% url 'persona_list' %}" class="btn btn-secondary">Cancelar</a>
 </form>
 {% endblock %}
