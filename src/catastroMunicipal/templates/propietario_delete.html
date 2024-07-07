@@ -3,7 +3,7 @@
 {% block content %}
 <h2>Eliminar Propietario</h2>
 
-<p>¿Estás seguro de que deseas eliminar el propietario "{{ propietario }}"?</p>
+<p>¿Estás seguro de que deseas eliminar el propietario "{{ propietario.percod }}"?</p>
 
 <form method="post">
     {% csrf_token %}

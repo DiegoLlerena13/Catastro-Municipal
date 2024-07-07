@@ -168,7 +168,7 @@ class Casa(models.Model):
     cascodblo = models.CharField(db_column='CasCodBlo', max_length=1, null=True, blank=True, verbose_name="Bloque")
     caspla = models.IntegerField(db_column='CasPla', null=True, blank=True, verbose_name="Planta")
     casnumpue = models.IntegerField(db_column='CasNumPue', null=True, blank=True, verbose_name="Número de Puerta")
-    casmet = models.DecimalField(db_column='CasMet', max_digits=5, decimal_places=0, null=True, blank=True, verbose_name="Metros")
+    casmet = models.DecimalField(db_column='CasMet', max_digits=5, decimal_places=0, blank=True, verbose_name="Metros")
     famcod = models.ForeignKey('Familia', on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
     casestreg = models.CharField(db_column='CasEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
     casocu = models.CharField(db_column='CasOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="¿Está ocupada?")
@@ -213,7 +213,7 @@ class PagoTributario(models.Model):
 
 class Propietario(models.Model):
     procod = models.AutoField(db_column='ProCod', primary_key=True, verbose_name="Código")
-    propagtri = models.DecimalField(db_column='ProPagTri', max_digits=8, decimal_places=0, verbose_name="Pago Tributario", editable=False)
+    propagtri = models.DecimalField(db_column='ProPagTri', max_digits=8, decimal_places=2, verbose_name="Pago Tributario", editable=False)
     promoningfam = models.DecimalField(db_column='ProMonIngFam', max_digits=8, decimal_places=0, verbose_name="Ingresos Familiares")
     percod = models.ForeignKey('Persona', on_delete=models.CASCADE, db_column='PerCod', verbose_name="Código de Persona")
     famcod = models.ForeignKey('Familia', on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
@@ -227,11 +227,13 @@ class Propietario(models.Model):
     def __str__(self):
         return f"Propietario {self.procod}"
 
-    def clean(self):
-        # Validar que promoningfam no sea menor que 0
-        if self.promoningfam <= Decimal('0'):
+    def clean_promoningfam(self):
+        promoningfam = self.cleaned_data['promoningfam']
+        if promoningfam <= Decimal('0'):
             raise ValidationError("El monto de ingreso familiar debe ser mayor que cero.")
-
+        return promoningfam
+    
+    def clean(self):
         # Validar que solo puede haber un propietario por familia
         if Propietario.objects.filter(famcod=self.famcod).exists() and self.pk is None:
             raise ValidationError("Ya existe un propietario para esta familia.")
@@ -240,6 +242,10 @@ class Propietario(models.Model):
         if self.percod.tippercod.tipperdes != "Propietario":
             raise ValidationError("La persona seleccionada no tiene el tipo de persona 'Propietario'.")
 
+        # Validar que la persona no sea propietario de más de una familia
+        if Propietario.objects.filter(percod=self.percod).exists() and self.pk is None:
+            raise ValidationError("La persona seleccionada ya es propietario de otra familia.")
+        
     def save(self, *args, **kwargs):
         # Calcular el pago tributario
         self.propagtri = self.promoningfam * Decimal('0.1')  # Multiplicar por 0.1 como Decimal

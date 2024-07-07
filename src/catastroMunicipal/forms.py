@@ -1,5 +1,8 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import *
+from decimal import Decimal
+from django.utils.html import format_html
 
 class RegionForm(forms.ModelForm):
     class Meta:
@@ -227,14 +230,21 @@ class PropietarioForm(forms.ModelForm):
             'promoningfam': forms.NumberInput(attrs={'class': 'form-control'}),
             'percod': forms.Select(attrs={'class': 'form-control'}),
             'famcod': forms.Select(attrs={'class': 'form-control'}),
-            'proestreg': forms.Select(attrs={'class': 'form-control'}),
+            'proestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(PropietarioForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['proestreg'].widget = forms.HiddenInput()
+            self.fields['proestreg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['proestreg'].widget.attrs['readonly'] = True
+            
     def clean_promoningfam(self):
-        # Validar que promoningfam no sea menor que 0
         promoningfam = self.cleaned_data['promoningfam']
-        if promoningfam < 0:
-            raise forms.ValidationError("El monto de ingreso familiar debe ser mayor o igual que cero.")
+        if promoningfam <= Decimal('0'):
+            raise forms.ValidationError("El monto de ingreso familiar debe ser mayor que cero.")
         return promoningfam
 
     def clean(self):
@@ -243,12 +253,15 @@ class PropietarioForm(forms.ModelForm):
         percod = cleaned_data.get('percod')
 
         # Validar que la persona tiene el tipo "Propietario"
-        if percod and percod.tipo_persona != "Propietario":
+        if percod and percod.tippercod.tipperdes != "Propietario":
             raise forms.ValidationError("La persona seleccionada no tiene el tipo de persona 'Propietario'.")
 
         # Validar que solo puede haber un propietario por familia
-        if famcod and percod:
-            if Propietario.objects.filter(famcod=famcod).exists() and not self.instance.pk:
-                raise forms.ValidationError("Ya existe un propietario para esta familia.")
+        if famcod and Propietario.objects.filter(famcod=famcod).exists() and not self.instance.pk:
+            raise forms.ValidationError("Ya existe un propietario para esta familia.")
 
+        # Validar que la persona no sea propietario de más de una familia
+        if percod and Propietario.objects.filter(percod=percod).exists() and not self.instance.pk:
+            raise forms.ValidationError("La persona seleccionada ya es propietario de otra familia.")
         return cleaned_data
+    
