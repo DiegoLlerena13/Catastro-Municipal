@@ -2,6 +2,20 @@
 
 {% block content %}
 <h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Casa</h2>
+
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> Por favor corrige los siguientes errores.<br><br>
+    <ul>
+        {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+        <li>{{ field|capfirst }}: {{ error }}</li>
+        {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 <form method="post" class="form">
     {% csrf_token %}
     <div class="form-group">
@@ -33,13 +47,13 @@
         {{ form.famcod }}
     </div>
     {% if form.instance.pk %}
-        <div class="form-group">
-            {{ form.casestreg.label_tag }}
-            {{ form.casestreg }}
-        </div>
-        <button type="button" class="btn btn-warning" onclick="toggleCasestreg()">Cambiar Estado</button>
-    {% else %}
+    <div class="form-group">
+        {{ form.casestreg.label_tag }}
         {{ form.casestreg }}
+    </div>
+    <button type="button" class="btn btn-warning" onclick="toggleCasestreg()">Cambiar Estado</button>
+    {% else %}
+    {{ form.casestreg }}
     {% endif %}
     <div class="form-group">
         {{ form.casocu.label_tag }}

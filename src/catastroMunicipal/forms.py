@@ -204,6 +204,28 @@ class CasaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['casestreg'].widget.attrs['readonly'] = True
 
+    def clean(self):
+        cleaned_data = super().clean()
+        famcod = cleaned_data.get('famcod')
+
+        # Validar que solo una familia puede tener una casa
+        existing_casa = Casa.objects.filter(famcod=famcod)
+        if self.instance.pk:
+            existing_casa = existing_casa.exclude(pk=self.instance.pk)  # Excluir la instancia actual al editar
+        if existing_casa.exists():
+            raise ValidationError("Esta familia ya tiene asignada una casa.")
+
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
+        try:
+            self.full_clean()  # Llama a clean() antes de guardar para validar
+            super().save(*args, **kwargs)
+        except ValidationError as e:
+            # Imprimir el error pero no redirigir a la página de error
+            print(f"Error al guardar la casa: {e}")
+            raise  # Re-lanza la excepción para que la vista pueda manejarla
+
 class PagoTributarioForm(forms.ModelForm):
     class Meta:
         model = PagoTributario
