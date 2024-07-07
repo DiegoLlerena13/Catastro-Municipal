@@ -221,7 +221,7 @@ def familia_create(request):
         form = FamiliaForm(request.POST)
         if form.is_valid():
             familia = form.save(commit=False)
-            familia.famnestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            familia.famestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
             familia.save()
             return redirect('familia_list')
     else:
