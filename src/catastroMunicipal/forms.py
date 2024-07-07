@@ -114,7 +114,7 @@ class ViviendaForm(forms.ModelForm):
             self.fields['vivestreg'].widget = forms.HiddenInput()
             self.fields['vivestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
-            self.fields['vivestreg'].widget.attrs['readonly'] = True    
+            self.fields['vivestreg'].widget.attrs['readonly'] = True 
 
 class FamiliaForm(forms.ModelForm):
     class Meta:
