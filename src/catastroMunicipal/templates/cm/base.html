@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Catastro Municipal</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
             padding-top: 70px;
@@ -24,78 +23,53 @@
         .nav-link:hover {
             color: #d4d4d4 !important;
         }
-        .container {
-            padding-top: 20px;
-        }
         .nav-item {
             margin-right: 10px;
         }
-        /* Select2 Bootstrap Integration Fix */
-        .select2-container--bootstrap4 .select2-selection--single {
-            height: calc(1.5em + .75rem + 2px);
-            padding: .375rem .75rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
-        }
-        .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
-            line-height: 1.5;
-        }
-        .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
-            height: calc(1.5em + .75rem + 2px);
-            right: 10px;
-        }
-        footer {
-            background-color: #44c270;
-            color: #ffffff;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+        .nav-item.active .nav-link {
+            background-color: #24643d !important; /* Color más oscuro para el elemento activo */
+            color: #ffffff !important;
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href="/">Catastro Municipal</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'region_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'region_list' %}">Regiones</a> 
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'municipio_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'municipio_list' %}">Municipios</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'zona_urbana_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'zona_urbana_list' %}">Zona Urbana</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'tipo_vivienda_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'tipo_vivienda_list' %}">Tipo de Vivienda</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'vivienda_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'vivienda_list' %}">Vivienda</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'familia_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'familia_list' %}">Familia</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'persona_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'persona_list' %}">Persona</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'tipo_persona_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'tipo_persona_list' %}">Tipo de Persona</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'casa_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'casa_list' %}">Casa</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'pago_tributario_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'pago_tributario_list' %}">Pago Tributario</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'propietario_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'propietario_list' %}">Propietario</a>
                 </li>
             </ul>
@@ -105,29 +79,8 @@
         {% block content %}
         {% endblock %}
     </div>
-    <footer>
-        <p>&copy; 2024 Catastro Municipal</p>
-    </footer>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.select2').select2({
-                theme: 'bootstrap4',
-                width: '100%'
-            });
-
-            // Highlight the active link
-            var current = location.pathname;
-            $('.nav-link').each(function() {
-                var $this = $(this);
-                if ($this.attr('href') === current) {
-                    $this.addClass('active').attr('aria-current', 'page');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
