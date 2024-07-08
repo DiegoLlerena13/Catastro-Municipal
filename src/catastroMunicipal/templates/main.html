@@ -1,0 +1,115 @@
+{% extends 'cm/base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Bienvenido al Catastro Municipal</h1>
+        <p class="lead">Gestiona y administra toda la información catastral de la municipalidad de manera eficiente.</p>
+        <hr class="my-4">
+        <p>Utiliza las opciones del menú para navegar a través de las diferentes secciones del sistema.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Regiones</h5>
+                    <p class="card-text">Administra la información de todas las regiones registradas.</p>
+                    <a href="{% url 'region_list' %}" class="btn btn-primary">Gestionar Regiones</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Municipios</h5>
+                    <p class="card-text">Administra la información de todos los municipios registrados.</p>
+                    <a href="{% url 'municipio_list' %}" class="btn btn-primary">Gestionar Municipios</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Zonas Urbanas</h5>
+                    <p class="card-text">Administra la información de todas las zonas urbanas registradas.</p>
+                    <a href="{% url 'zona_urbana_list' %}" class="btn btn-primary">Gestionar Zonas Urbanas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Tipos de Vivienda</h5>
+                    <p class="card-text">Administra la información de todos los tipos de vivienda registrados.</p>
+                    <a href="{% url 'tipo_vivienda_list' %}" class="btn btn-primary">Gestionar Tipos de Vivienda</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Viviendas</h5>
+                    <p class="card-text">Administra la información de todas las viviendas registradas.</p>
+                    <a href="{% url 'vivienda_list' %}" class="btn btn-primary">Gestionar Viviendas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Familias</h5>
+                    <p class="card-text">Gestiona los datos de las familias y sus miembros.</p>
+                    <a href="{% url 'familia_list' %}" class="btn btn-primary">Gestionar Familias</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Personas</h5>
+                    <p class="card-text">Gestiona los datos de las personas registradas.</p>
+                    <a href="{% url 'persona_list' %}" class="btn btn-primary">Gestionar Personas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Tipos de Persona</h5>
+                    <p class="card-text">Administra la información de todos los tipos de persona registrados.</p>
+                    <a href="{% url 'tipo_persona_list' %}" class="btn btn-primary">Gestionar Tipos de Persona</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Casas</h5>
+                    <p class="card-text">Gestiona la información de todas las casas registradas.</p>
+                    <a href="{% url 'casa_list' %}" class="btn btn-primary">Gestionar Casas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Pagos Tributarios</h5>
+                    <p class="card-text">Consulta y administra los pagos tributarios realizados.</p>
+                    <a href="{% url 'pago_tributario_list' %}" class="btn btn-primary">Ver Pagos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Propietarios</h5>
+                    <p class="card-text">Gestiona la información de todos los propietarios registrados.</p>
+                    <a href="{% url 'propietario_list' %}" class="btn btn-primary">Gestionar Propietarios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

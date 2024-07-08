@@ -1,0 +1,13 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Eliminar Vivienda</h2>
+
+<p>¿Estás seguro de que deseas eliminar la vivienda "{{ vivienda }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'vivienda_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

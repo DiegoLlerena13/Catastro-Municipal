@@ -1,0 +1,52 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Familia</h2>
+
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> Por favor corrige los siguientes errores.<br><br>
+    <ul>
+        {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+        <li>{{ field|capfirst }}: {{ error }}</li>
+        {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.famnom.label_tag }}
+        {{ form.famnom }}
+    </div>
+    <div class="form-group">
+        {{ form.famnumint.label_tag }}
+        {{ form.famnumint }}
+    </div>
+    {% if form.instance.pk %}
+        <div class="form-group">
+            {{ form.famestreg.label_tag }}
+            {{ form.famestreg }}
+        </div>
+        <button type="button" class="btn btn-warning" onclick="toggleFamestreg()">Cambiar Estado</button>
+    {% else %}
+        {{ form.famestreg }}
+    {% endif %}
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'familia_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<script>
+function toggleFamestreg() {
+    var famestregField = document.getElementById('id_famestreg');
+    if (famestregField.value === 'A') {
+        famestregField.value = 'I';
+    } else {
+        famestregField.value = 'A';
+    }
+}
+</script>
+{% endblock %}

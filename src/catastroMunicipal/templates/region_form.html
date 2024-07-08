@@ -1,0 +1,34 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Región</h2>
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.regnom.label_tag }}
+        {{ form.regnom }}
+    </div>
+    {% if form.instance.pk %}
+        <div class="form-group">
+            {{ form.regestreg.label_tag }}
+            {{ form.regestreg }}
+        </div>
+        <button type="button" class="btn btn-warning" onclick="toggleRegestreg()">Cambiar Estado</button>
+    {% else %}
+        {{ form.regestreg }}
+    {% endif %}
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'region_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<script>
+function toggleRegestreg() {
+    var regestregField = document.getElementById('id_regestreg');
+    if (regestregField.value === 'A') {
+        regestregField.value = 'I';
+    } else {
+        regestregField.value = 'A';
+    }
+}
+</script>
+{% endblock %}

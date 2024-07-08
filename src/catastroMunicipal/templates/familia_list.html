@@ -1,0 +1,31 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Lista de Familias</h2>
+<a href="{% url 'familia_create' %}" class="btn btn-primary mb-2">Crear Nueva Familia</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Número de Integrantes</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for familia in familias %}
+        <tr>
+            <td>{{ familia.famcod }}</td>
+            <td>{{ familia.famnom }}</td>
+            <td>{{ familia.famnumint }}</td>
+            <td>{{ familia.famestreg }}</td>
+            <td>
+                <a href="{% url 'familia_update' familia.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'familia_delete' familia.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

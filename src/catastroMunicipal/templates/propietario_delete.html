@@ -1,0 +1,13 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Eliminar Propietario</h2>
+
+<p>¿Estás seguro de que deseas eliminar el propietario "{{ propietario.percod }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'propietario_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
