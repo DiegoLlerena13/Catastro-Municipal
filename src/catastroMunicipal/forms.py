@@ -217,15 +217,6 @@ class CasaForm(forms.ModelForm):
 
         return cleaned_data
 
-    def save(self, *args, **kwargs):
-        try:
-            self.full_clean()  # Llama a clean() antes de guardar para validar
-            super().save(*args, **kwargs)
-        except ValidationError as e:
-            # Imprimir el error pero no redirigir a la página de error
-            print(f"Error al guardar la casa: {e}")
-            raise  # Re-lanza la excepción para que la vista pueda manejarla
-
 class PagoTributarioForm(forms.ModelForm):
     class Meta:
         model = PagoTributario
