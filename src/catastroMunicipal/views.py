@@ -8,6 +8,9 @@ from .forms import *
 def base(request):
     return render(request, 'cm/base.html')
 
+def main(request):
+    return render(request, 'main.html')
+
 def region_list(request):
     regiones = Region.objects.all()
     return render(request, 'region_list.html', {'regiones': regiones})
