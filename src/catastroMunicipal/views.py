@@ -221,7 +221,7 @@ def familia_create(request):
         form = FamiliaForm(request.POST)
         if form.is_valid():
             familia = form.save(commit=False)
-            familia.famnestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            familia.famestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
             familia.save()
             return redirect('familia_list')
     else:
@@ -372,8 +372,8 @@ def pago_tributario_update(request, pk):
             form.save()
             return redirect('pago_tributario_list')
     else:
-        form = PagoTributarioForm(instance=pago_tributario)
-    return render(request, 'pago_tributario_form.html', {'form': form})
+        form = PagoTributarioForm(instance=pago_tributario)  # Pasa la instancia al formulario
+    return render(request, 'pago_tributario_form.html', {'form': form, 'pago_tributario': pago_tributario})
 
 def pago_tributario_delete(request, pk):
     pago_tributario = get_object_or_404(PagoTributario, pk=pk)

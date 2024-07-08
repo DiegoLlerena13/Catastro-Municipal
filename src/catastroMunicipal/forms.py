@@ -29,7 +29,7 @@ class MunicipioForm(forms.ModelForm):
             'munnom': forms.TextInput(attrs={'class': 'form-control'}),
             'munpreanu': forms.NumberInput(attrs={'class': 'form-control'}),
             'munnumviv': forms.NumberInput(attrs={'class': 'form-control'}),
-            'regcod': forms.Select(attrs={'class': 'form-control'}),
+            'regcod': forms.Select(attrs={'class': 'form-control select2'}),
             'munestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
@@ -48,7 +48,7 @@ class ZonaUrbanaForm(forms.ModelForm):
         fields = ['zonnom', 'muncod', 'zonestreg']
         widgets = {
             'zonnom': forms.TextInput(attrs={'class': 'form-control'}),
-            'muncod': forms.Select(attrs={'class': 'form-control'}),
+            'muncod': forms.Select(attrs={'class': 'form-control select2'}),
             'zonestreg': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
@@ -103,8 +103,8 @@ class ViviendaForm(forms.ModelForm):
             'vivnum': forms.NumberInput(attrs={'class': 'form-control'}),
             'vivcodpos': forms.NumberInput(attrs={'class': 'form-control'}),
             'vivocu': forms.Select(attrs={'class': 'form-control'}),
-            'zoncod': forms.Select(attrs={'class': 'form-control'}),
-            'tipvivcod': forms.Select(attrs={'class': 'form-control'}),
+            'zoncod': forms.Select(attrs={'class': 'form-control select2'}),
+            'tipvivcod': forms.Select(attrs={'class': 'form-control select2'}),
             'vivestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
@@ -114,7 +114,7 @@ class ViviendaForm(forms.ModelForm):
             self.fields['vivestreg'].widget = forms.HiddenInput()
             self.fields['vivestreg'].initial = 'A'
         else:  # Si se está editando una instancia existente
-            self.fields['vivestreg'].widget.attrs['readonly'] = True    
+            self.fields['vivestreg'].widget.attrs['readonly'] = True 
 
 class FamiliaForm(forms.ModelForm):
     class Meta:
@@ -153,8 +153,8 @@ class PersonaForm(forms.ModelForm):
             'pernom': forms.TextInput(attrs={'class': 'form-control'}),
             'perapepat': forms.TextInput(attrs={'class': 'form-control'}),
             'perapemat': forms.TextInput(attrs={'class': 'form-control'}),
-            'famcod': forms.Select(attrs={'class': 'form-control'}),
-            'tippercod': forms.Select(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control select2'}),
+            'tippercod': forms.Select(attrs={'class': 'form-control select2'}),
             'perestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
@@ -185,13 +185,13 @@ class CasaForm(forms.ModelForm):
         model = Casa
         fields = ['vivcod', 'casesc', 'cascodblo', 'caspla', 'casnumpue', 'casmet', 'famcod', 'casestreg', 'casocu']
         widgets = {
-            'vivcod': forms.Select(attrs={'class': 'form-control'}),
+            'vivcod': forms.Select(attrs={'class': 'form-control select2'}),
             'casesc': forms.NumberInput(attrs={'class': 'form-control'}),
             'cascodblo': forms.TextInput(attrs={'class': 'form-control'}),
             'caspla': forms.NumberInput(attrs={'class': 'form-control'}),
             'casnumpue': forms.NumberInput(attrs={'class': 'form-control'}),
             'casmet': forms.NumberInput(attrs={'class': 'form-control'}),
-            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control select2'}),
             'casestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'casocu': forms.Select(attrs={'class': 'form-control'}),
         }
@@ -204,23 +204,47 @@ class CasaForm(forms.ModelForm):
         else:  # Si se está editando una instancia existente
             self.fields['casestreg'].widget.attrs['readonly'] = True
 
+    def clean(self):
+        cleaned_data = super().clean()
+        famcod = cleaned_data.get('famcod')
+
+        # Validar que solo una familia puede tener una casa
+        existing_casa = Casa.objects.filter(famcod=famcod)
+        if self.instance.pk:
+            existing_casa = existing_casa.exclude(pk=self.instance.pk)  # Excluir la instancia actual al editar
+        if existing_casa.exists():
+            raise ValidationError("Esta familia ya tiene asignada una casa.")
+
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
+        try:
+            self.full_clean()  # Llama a clean() antes de guardar para validar
+            super().save(*args, **kwargs)
+        except ValidationError as e:
+            # Imprimir el error pero no redirigir a la página de error
+            print(f"Error al guardar la casa: {e}")
+            raise  # Re-lanza la excepción para que la vista pueda manejarla
+
 class PagoTributarioForm(forms.ModelForm):
     class Meta:
         model = PagoTributario
         fields = ['pagtrifec', 'cascod', 'pagtriestreg']
         widgets = {
-            'pagtrifec': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'cascod': forms.Select(attrs={'class': 'form-control'}),
+            'pagtrifec': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'placeholder': 'dd/mm/aaaa'}),
+            'cascod': forms.Select(attrs={'class': 'form-control select2'}),
             'pagtriestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(PagoTributarioForm, self).__init__(*args, **kwargs)
-        if not self.instance.pk:  # Si se está creando una nueva instancia
+        if self.instance.pk:  # Si se está editando una instancia existente
+            self.fields['pagtrifec'].widget.attrs['value'] = self.instance.pagtrifec.strftime('%Y-%m-%d')
+            self.fields['pagtriestreg'].widget.attrs['readonly'] = True
+        else:  # Si se está creando una nueva instancia
             self.fields['pagtriestreg'].widget = forms.HiddenInput()
             self.fields['pagtriestreg'].initial = 'A'
-        else:  # Si se está editando una instancia existente
-            self.fields['pagtriestreg'].widget.attrs['readonly'] = True
+
     
 class PropietarioForm(forms.ModelForm):
     class Meta:
@@ -228,8 +252,8 @@ class PropietarioForm(forms.ModelForm):
         fields = ['promoningfam', 'percod', 'famcod', 'proestreg']
         widgets = {
             'promoningfam': forms.NumberInput(attrs={'class': 'form-control'}),
-            'percod': forms.Select(attrs={'class': 'form-control'}),
-            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'percod': forms.Select(attrs={'class': 'form-control select2'}),
+            'famcod': forms.Select(attrs={'class': 'form-control select2'}),
             'proestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
