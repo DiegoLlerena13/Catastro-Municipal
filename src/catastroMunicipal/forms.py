@@ -48,7 +48,7 @@ class ZonaUrbanaForm(forms.ModelForm):
         fields = ['zonnom', 'muncod', 'zonestreg']
         widgets = {
             'zonnom': forms.TextInput(attrs={'class': 'form-control'}),
-            'muncod': forms.Select(attrs={'class': 'form-control'}),
+            'muncod': forms.Select(attrs={'class': 'form-control select2'}),
             'zonestreg': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
@@ -103,8 +103,8 @@ class ViviendaForm(forms.ModelForm):
             'vivnum': forms.NumberInput(attrs={'class': 'form-control'}),
             'vivcodpos': forms.NumberInput(attrs={'class': 'form-control'}),
             'vivocu': forms.Select(attrs={'class': 'form-control'}),
-            'zoncod': forms.Select(attrs={'class': 'form-control'}),
-            'tipvivcod': forms.Select(attrs={'class': 'form-control'}),
+            'zoncod': forms.Select(attrs={'class': 'form-control select2'}),
+            'tipvivcod': forms.Select(attrs={'class': 'form-control select2'}),
             'vivestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
@@ -153,8 +153,8 @@ class PersonaForm(forms.ModelForm):
             'pernom': forms.TextInput(attrs={'class': 'form-control'}),
             'perapepat': forms.TextInput(attrs={'class': 'form-control'}),
             'perapemat': forms.TextInput(attrs={'class': 'form-control'}),
-            'famcod': forms.Select(attrs={'class': 'form-control'}),
-            'tippercod': forms.Select(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control select2'}),
+            'tippercod': forms.Select(attrs={'class': 'form-control select2'}),
             'perestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
@@ -185,13 +185,13 @@ class CasaForm(forms.ModelForm):
         model = Casa
         fields = ['vivcod', 'casesc', 'cascodblo', 'caspla', 'casnumpue', 'casmet', 'famcod', 'casestreg', 'casocu']
         widgets = {
-            'vivcod': forms.Select(attrs={'class': 'form-control'}),
+            'vivcod': forms.Select(attrs={'class': 'form-control select2'}),
             'casesc': forms.NumberInput(attrs={'class': 'form-control'}),
             'cascodblo': forms.TextInput(attrs={'class': 'form-control'}),
             'caspla': forms.NumberInput(attrs={'class': 'form-control'}),
             'casnumpue': forms.NumberInput(attrs={'class': 'form-control'}),
             'casmet': forms.NumberInput(attrs={'class': 'form-control'}),
-            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'famcod': forms.Select(attrs={'class': 'form-control select2'}),
             'casestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'casocu': forms.Select(attrs={'class': 'form-control'}),
         }
@@ -232,7 +232,7 @@ class PagoTributarioForm(forms.ModelForm):
         fields = ['pagtrifec', 'cascod', 'pagtriestreg']
         widgets = {
             'pagtrifec': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'placeholder': 'dd/mm/aaaa'}),
-            'cascod': forms.Select(attrs={'class': 'form-control'}),
+            'cascod': forms.Select(attrs={'class': 'form-control select2'}),
             'pagtriestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
@@ -252,8 +252,8 @@ class PropietarioForm(forms.ModelForm):
         fields = ['promoningfam', 'percod', 'famcod', 'proestreg']
         widgets = {
             'promoningfam': forms.NumberInput(attrs={'class': 'form-control'}),
-            'percod': forms.Select(attrs={'class': 'form-control'}),
-            'famcod': forms.Select(attrs={'class': 'form-control'}),
+            'percod': forms.Select(attrs={'class': 'form-control select2'}),
+            'famcod': forms.Select(attrs={'class': 'form-control select2'}),
             'proestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
