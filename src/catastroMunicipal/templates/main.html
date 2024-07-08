@@ -1,7 +1,42 @@
 {% extends 'cm/base.html' %}
 
 {% block content %}
-<h2>Eliminar Casa</h2>
-
+<style>
+    h1 {
+        margin-top: 20px;
+    }
+    .subheading {
+        font-style: italic;
+    }
+    .info-box {
+        background-color: #f8f9fa; /* Color blanco-plateado */
+        border: 1px solid #ddd;
+        padding: 40px 30px 0px 30px; /* Ajusta el padding de arriba, derecha, abajo e izquierda */
+        border-radius: 5px;
+        font-size: 20px;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Animación */
+        
+    }
+    .info-box:hover {
+        transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra al pasar el mouse */
+    }
+</style>
+<section class="resume-section" id="home">
+    <div class="resume-section-content">
+        <h1 class="mb-0">
+            Gestión de 
+            <span class="text-primary">Catastro Municipal</span>
+        </h1>
+        <div class="subheading mb-5">
+            Proyecto realizado por <span class="text-primary">Diego Llerena</span>, <span class="text-primary">Cielo Meza</span> y <span class="text-primary">Cristian Saya</span>
+        </div>
+        <p class="lead mb-5" style="font-weight: bold;">¡Bienvenid@!</p>
+        <div class="info-box">
+            <p class="lead mb-5">En esta página ud. podrá manejar y observar los registros del <a style="font-weight: bold;">Catastro Municipal</a>, asimismo le permitirá realizar consultas de los diversos datos que maneja el municipio
+            , puede acceder a las diferentes tablas, como región, municipio, zona_urbana, vivienda, casa, etc, cumpliendo y verificando los requisitos pedidos por la región, estos mismos pueden ser modificados de acuerdo a sus necesidad, especialmente en el pago de tributos :D</p>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
