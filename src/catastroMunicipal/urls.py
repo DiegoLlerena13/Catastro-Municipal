@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.main, name='main'),
     path('regiones/', views.region_list, name='region_list'),
     path('regiones/new/', views.region_create, name='region_create'),
     path('regiones/<int:pk>/edit/', views.region_update, name='region_update'),
