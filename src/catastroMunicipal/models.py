@@ -93,9 +93,9 @@ class Vivienda(models.Model):
 class Familia(models.Model):
     famcod = models.AutoField(db_column='FamCod', primary_key=True, verbose_name="Código")
     famnom = models.CharField(db_column='FamNom', max_length=15, verbose_name="Nombre")
-    famnumint = models.IntegerField(db_column='FamNumInt', verbose_name="Número de Integrantes")
+    famnumint = models.IntegerField(db_column='FamNumInt', verbose_name="Número de Integrantes", default=1)
     famestreg = models.CharField(db_column='FamEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
-    
+
     class Meta:
         verbose_name = "Familia"
         verbose_name_plural = "Familias"
@@ -104,12 +104,9 @@ class Familia(models.Model):
     def __str__(self):
         return self.famnom
 
-    def clean(self):
-        # Validar que famnumint no sea cero
-        if self.famnumint <= 0:
-            raise ValidationError("El número de integrantes debe ser mayor que cero.")
-
-
+    def update_num_integrantes(self):
+        self.famnumint = self.persona_set.count()
+        self.save(update_fields=['famnumint'])
 
 class TipoPersona(models.Model):
     tippercod = models.AutoField(db_column='TipPerCod', primary_key=True, verbose_name="Código")
@@ -130,7 +127,7 @@ class Persona(models.Model):
     perapepat = models.CharField(db_column='PerApePat', max_length=10, verbose_name="Apellido Paterno")
     perapemat = models.CharField(db_column='PerApeMat', max_length=10, verbose_name="Apellido Materno")
     famcod = models.ForeignKey(Familia, on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
-    tippercod = models.ForeignKey(TipoPersona, on_delete=models.CASCADE, db_column='TipPerCod', verbose_name="Código de Tipo de Persona")
+    tippercod = models.ForeignKey('TipoPersona', on_delete=models.CASCADE, db_column='TipPerCod', verbose_name="Código de Tipo de Persona")
     perestreg = models.CharField(db_column='PerEstReg', max_length=1, verbose_name="Estado de Registro", default='A')
 
     class Meta:
@@ -141,17 +138,14 @@ class Persona(models.Model):
     def __str__(self):
         return f"{self.pernom} {self.perapepat} {self.perapemat}"
 
-    def clean(self):
-        # Verificar cantidad de integrantes de la familia
-        integrantes_actuales = Persona.objects.filter(famcod=self.famcod).count()
-        num_integrantes_familia = self.famcod.famnumint  # Obtener el número máximo de integrantes de la familia
-
-        if integrantes_actuales >= num_integrantes_familia:
-            raise ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. El número de miembros indicados esta correcto, no se puede agregar más")
-
     def save(self, *args, **kwargs):
-        self.full_clean()  # Realizar la validación antes de guardar
         super().save(*args, **kwargs)
+        self.famcod.update_num_integrantes()
+
+    def delete(self, *args, **kwargs):
+        familia = self.famcod
+        super().delete(*args, **kwargs)
+        familia.update_num_integrantes()
 
 class Casa(models.Model):
     cascod = models.AutoField(db_column='CasCod', primary_key=True, verbose_name="Código")

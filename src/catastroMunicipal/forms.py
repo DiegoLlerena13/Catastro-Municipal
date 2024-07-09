@@ -123,24 +123,24 @@ class FamiliaForm(forms.ModelForm):
 
         widgets = {
             'famnom': forms.TextInput(attrs={'class': 'form-control'}),
-            'famnumint': forms.NumberInput(attrs={'class': 'form-control'}),
+            'famnumint': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'famestreg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(FamiliaForm, self).__init__(*args, **kwargs)
-        if not self.instance.pk:  # Si se está creando una nueva instancia
+        self.fields['famnumint'].widget.attrs['readonly'] = True  # Make famnumint read-only
+        if not self.instance.pk:  # If creating a new instance
             self.fields['famestreg'].widget = forms.HiddenInput()
             self.fields['famestreg'].initial = 'A'
-        else:  # Si se está editando una instancia existente
+        else:  # If editing an existing instance
             self.fields['famestreg'].widget.attrs['readonly'] = True
 
     def clean(self):
         cleaned_data = super().clean()
-        famnumint = cleaned_data.get('famnumint')
-
-        if famnumint <= 0:
-            raise forms.ValidationError("El número de integrantes debe ser mayor que cero.")
+        if self.instance.pk:  # If editing an existing instance
+            # Automatically update the number of integrantes
+            cleaned_data['famnumint'] = self.instance.persona_set.count()
 
         return cleaned_data
     
@@ -160,24 +160,15 @@ class PersonaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PersonaForm, self).__init__(*args, **kwargs)
-        if not self.instance.pk:  # Si se está creando una nueva instancia
+        if not self.instance.pk:  # If creating a new instance
             self.fields['perestreg'].widget = forms.HiddenInput()
             self.fields['perestreg'].initial = 'A'
-        else:  # Si se está editando una instancia existente
+        else:  # If editing an existing instance
             self.fields['perestreg'].widget.attrs['readonly'] = True
 
     def clean(self):
         cleaned_data = super().clean()
-        famcod = cleaned_data.get('famcod')
-
-        # Verificar la cantidad de integrantes de la familia
-        if famcod:
-            integrantes_actuales = Persona.objects.filter(famcod=famcod).count()
-            num_integrantes_familia = famcod.famnumint  # Obtener el número máximo de integrantes de la familia
-
-            if integrantes_actuales >= num_integrantes_familia:
-                raise forms.ValidationError(f"La familia ya tiene registrados {num_integrantes_familia} integrantes. No se pueden agregar más.")
-
+        # No need to verify the maximum number of family members anymore
         return cleaned_data
 
 class CasaForm(forms.ModelForm):
