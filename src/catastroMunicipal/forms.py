@@ -24,8 +24,8 @@ class MunicipioForm(forms.ModelForm):
         fields = ['MunNom', 'MunPreAnu', 'MunNumViv', 'RegCod', 'MunEstReg']
         widgets = {
             'MunNom': forms.TextInput(attrs={'class': 'form-control'}),
-            'MunPreAnu': forms.NumberInput(attrs={'class': 'form-control'}),
-            'MunNumViv': forms.NumberInput(attrs={'class': 'form-control'}),
+            'MunPreAnu': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'MunNumViv': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'RegCod': forms.Select(attrs={'class': 'form-control select2'}),
             'MunEstReg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
