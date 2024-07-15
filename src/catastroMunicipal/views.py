@@ -84,3 +84,33 @@ def region_delete(request, pk):
         region.delete()
         return redirect('region_list')
     return render(request, 'region_delete.html', {'region': region})
+
+def municipio_create(request):
+    if request.method == "POST":
+        form = MunicipioForm(request.POST)
+        if form.is_valid():
+            municipio = form.save(commit=False)
+            municipio.munestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            municipio.save()
+            return redirect('municipio_list')
+    else:
+        form = MunicipioForm()
+    return render(request, 'municipio_form.html', {'form': form})
+
+def municipio_update(request, pk):
+    municipio = get_object_or_404(Municipio, pk=pk)
+    if request.method == "POST":
+        form = MunicipioForm(request.POST, instance=municipio)
+        if form.is_valid():
+            form.save()
+            return redirect('municipio_list')
+    else:
+        form = MunicipioForm(instance=municipio)
+    return render(request, 'municipio_form.html', {'form': form})
+
+def municipio_delete(request, pk):
+    municipio = get_object_or_404(Municipio, pk=pk)
+    if request.method == "POST":
+        municipio.delete()
+        return redirect('municipio_list')
+    return render(request, 'municipio_delete.html', {'municipio': municipio})

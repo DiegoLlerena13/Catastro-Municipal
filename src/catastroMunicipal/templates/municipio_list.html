@@ -1,0 +1,35 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Lista de Municipios</h2>
+<a href="{% url 'municipio_create' %}" class="btn btn-primary mb-2">Crear Nuevo Municipio</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Presupuesto Anual</th>
+            <th>Número de Viviendas</th>
+            <th>Región</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for municipio in municipios %}
+        <tr>
+            <td>{{ municipio.MunCod }}</td>
+            <td>{{ municipio.MunNom }}</td>
+            <td>{{ municipio.MunPreAnu }}</td>
+            <td>{{ municipio.MunNumViv }}</td>
+            <td>{{ municipio.RegCod.RegNom }}</td>
+            <td>{{ municipio.MunEstReg }}</td>
+            <td>
+                <a href="{% url 'municipio_update' municipio.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'municipio_delete' municipio.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Municipio</h2>
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.MunNom.label_tag }}
+        {{ form.MunNom }}
+    </div>
+    <div class="form-group">
+        {{ form.MunPreAnu.label_tag }}
+        {{ form.MunPreAnu }}
+    </div>
+    <div class="form-group">
+        {{ form.MunNumViv.label_tag }}
+        {{ form.MunNumViv }}
+    </div>
+    <div class="form-group">
+        {{ form.RegCod.label_tag }}
+        {{ form.RegCod }}
+    </div>
+    {% if form.instance.pk %}
+        <div class="form-group">
+            {{ form.MunEstReg.label_tag }}
+            {{ form.MunEstReg }}
+        </div>
+        <button type="button" class="btn btn-warning" onclick="toggleMunEstReg()">Cambiar Estado</button>
+    {% else %}
+        {{ form.MunEstReg }}
+    {% endif %}
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'municipio_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<script>
+function toggleMunEstReg() {
+    var munEstRegField = document.getElementById('id_MunEstReg');
+    if (munEstRegField.value === 'A') {
+        munEstRegField.value = 'I';
+    } else {
+        munEstRegField.value = 'A';
+    }
+}
+</script>
+{% endblock %}
