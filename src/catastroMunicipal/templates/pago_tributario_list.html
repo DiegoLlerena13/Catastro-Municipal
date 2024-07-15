@@ -2,6 +2,7 @@
 
 {% block content %}
 <h2>Lista de Pagos Tributarios</h2>
+<a href="{% url 'pago_tributario_create' %}" class="btn btn-primary mb-2">Crear Pago Tributario</a>
 <table class="table">
     <thead>
         <tr>
@@ -33,5 +34,4 @@
         {% endfor %}
     </tbody>
 </table>
-<a href="{% url 'pago_tributario_create' %}" class="btn btn-success">Crear Pago Tributario</a>
 {% endblock %}

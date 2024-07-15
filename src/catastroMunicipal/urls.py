@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import *;
 
 urlpatterns = [
     path('', views.main, name='main'),
@@ -51,5 +52,7 @@ urlpatterns = [
     path('pagos_tributarios/new/', views.pago_tributario_create, name='pago_tributario_create'),
     path('pagos_tributarios/edit/<int:pk>/', views.pago_tributario_update, name='pago_tributario_update'),
     path('pagos_tributarios/delete/<int:pk>/', views.pago_tributario_delete, name='pago_tributario_delete'),
+    path('reporte/region/<int:region_id>/', generar_reporte_region_pdf, name='generar_reporte_region_pdf'),
+    path('consultas_tributarias/', views.consultas_tributarias, name='consultas_tributarias'),
     path('', views.base, name='base'),
 ]

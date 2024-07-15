@@ -1,8 +1,19 @@
+from io import BytesIO
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.platypus import Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 from .models import *
 from .forms import *
+from .queries import *
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
 
 # Create your views here.
 def base(request):
@@ -407,3 +418,101 @@ def pago_tributario_delete(request, pk):
         return redirect('pago_tributario_list')
     return render(request, 'pago_tributario_delete.html', {'pago_tributario': pago_tributario})
 
+def generar_reporte_region_pdf(request, region_id):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_pago_por_region.pdf"'
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+    elements = []
+    styles = getSampleStyleSheet()
+
+    region = get_object_or_404(Region, pk=region_id)
+    elements.append(Paragraph(f"Reporte de Pagos Tributarios por Región: {region.RegNom}", styles['Title']))
+
+    reporte_region = pagos_tributarios_por_region(region_id)
+    elements.append(Paragraph(f"Total Pagado en la Región: {reporte_region['total_pagado']}", styles['Normal']))
+    elements.append(Paragraph(f"Total de Pagos Realizados: {reporte_region['total_pagos']}", styles['Normal']))
+
+    municipios = Municipio.objects.filter(RegCod=region_id)
+
+    for municipio in municipios:
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph(f"Municipio: {municipio.MunNom}", styles['Heading2']))
+        reporte_municipio = pagos_tributarios_por_municipio(municipio.MunCod)
+        elements.append(Paragraph(f"Total Pagado: {reporte_municipio['total_pagado']}", styles['Normal']))
+        elements.append(Paragraph(f"Total de Pagos Realizados: {reporte_municipio['total_pagos']}", styles['Normal']))
+
+        zonas = ZonaUrbana.objects.filter(MunCod=municipio.MunCod)
+        for zona in zonas:
+            elements.append(Spacer(1, 12))
+            elements.append(Paragraph(f"Zona Urbana: {zona.ZonNom}", styles['Heading3']))
+            reporte_zona = pagos_tributarios_por_zona(zona.ZonCod)
+            elements.append(Paragraph(f"Total Pagado: {reporte_zona['total_pagado']}", styles['Normal']))
+            elements.append(Paragraph(f"Total de Pagos Realizados: {reporte_zona['total_pagos']}", styles['Normal']))
+
+            viviendas = Vivienda.objects.filter(ZonCod=zona.ZonCod)
+            data = [['Vivienda', 'Total Pagado', 'Total de Pagos Realizados']]
+            for vivienda in viviendas:
+                reporte_vivienda = pagos_tributarios_por_vivienda(vivienda.VivCod)
+                data.append([
+                    vivienda.VivCod,
+                    reporte_vivienda['total_pagado'],
+                    reporte_vivienda['total_pagos']
+                ])
+
+            table = Table(data)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ]))
+            elements.append(table)
+
+    doc.build(elements)
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response
+
+def consultas_tributarias(request):
+    consulta_vivienda_form = ConsultaViviendaForm(request.POST or None)
+    consulta_zona_form = ConsultaZonaForm(request.POST or None)
+    consulta_municipio_form = ConsultaMunicipioForm(request.POST or None)
+    consulta_region_form = ConsultaRegionForm(request.POST or None)
+
+    if request.method == 'POST':
+        if 'vivienda_form' in request.POST and consulta_vivienda_form.is_valid():
+            vivienda = consulta_vivienda_form.cleaned_data['vivienda']
+            # Procesar la consulta de pagos por vivienda aquí
+            return redirect('consultas_tributarias')
+
+        elif 'zona_form' in request.POST and consulta_zona_form.is_valid():
+            zona = consulta_zona_form.cleaned_data['zona']
+            # Procesar la consulta de pagos por zona aquí
+            return redirect('consultas_tributarias')
+
+        elif 'municipio_form' in request.POST and consulta_municipio_form.is_valid():
+            municipio = consulta_municipio_form.cleaned_data['municipio']
+            # Procesar la consulta de pagos por municipio aquí
+            return redirect('consultas_tributarias')
+
+        elif 'region_form' in request.POST and consulta_region_form.is_valid():
+            region = consulta_region_form.cleaned_data['region']
+            # Redirigir a la página para generar el PDF
+            return redirect('generar_reporte_region_pdf', region_id=region.pk)
+
+    context = {
+        'consulta_vivienda_form': consulta_vivienda_form,
+        'consulta_zona_form': consulta_zona_form,
+        'consulta_municipio_form': consulta_municipio_form,
+        'consulta_region_form': consulta_region_form,
+    }
+
+    return render(request, 'consultas_tributarias.html', context)
