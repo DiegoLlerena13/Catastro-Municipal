@@ -1,0 +1,33 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Lista de Personas</h2>
+<a href="{% url 'persona_create' %}" class="btn btn-primary mb-2">Crear Nueva Persona</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre(s)</th>
+            <th>Familia</th>
+            <th>Tipo de Persona</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for persona in personas %}
+        <tr>
+            <td>{{ persona.PerCod }}</td>
+            <td>{{ persona.PerNom }}</td>
+            <td>{{ persona.FamCod.FamNom }}</td>
+            <td>{{ persona.TipPerCod.TipPerDes }}</td>
+            <td>{{ persona.PerEstReg }}</td>
+            <td>
+                <a href="{% url 'persona_update' persona.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'persona_delete' persona.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
