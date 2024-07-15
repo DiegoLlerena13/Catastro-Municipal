@@ -481,6 +481,60 @@ def generar_reporte_region_pdf(request, region_id):
 
     return response
 
+def generar_reporte_municipio_pdf(request, municipio_id):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reporte_pago_por_municipio_{municipio_id}.pdf"'
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+    elements = []
+    styles = getSampleStyleSheet()
+
+    municipio = get_object_or_404(Municipio, pk=municipio_id)
+    elements.append(Paragraph(f"Reporte de Pagos Tributarios por Municipio: {municipio.MunNom}", styles['Title']))
+
+    reporte_municipio = pagos_tributarios_por_municipio(municipio_id)
+    elements.append(Paragraph(f"Total Pagado en el Municipio: {reporte_municipio['total_pagado']}", styles['Normal']))
+    elements.append(Paragraph(f"Total de Pagos Realizados: {reporte_municipio['total_pagos']}", styles['Normal']))
+
+    zonas = ZonaUrbana.objects.filter(MunCod=municipio_id)
+    for zona in zonas:
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph(f"Zona Urbana: {zona.ZonNom}", styles['Heading2']))
+        reporte_zona = pagos_tributarios_por_zona(zona.ZonCod)
+        elements.append(Paragraph(f"Total Pagado: {reporte_zona['total_pagado']}", styles['Normal']))
+        elements.append(Paragraph(f"Total de Pagos Realizados: {reporte_zona['total_pagos']}", styles['Normal']))
+
+        viviendas = Vivienda.objects.filter(ZonCod=zona.ZonCod)
+        data = [['Vivienda', 'Total Pagado', 'Total de Pagos Realizados']]
+        for vivienda in viviendas:
+            reporte_vivienda = pagos_tributarios_por_vivienda(vivienda.VivCod)
+            data.append([
+                vivienda.VivCod,
+                reporte_vivienda['total_pagado'],
+                reporte_vivienda['total_pagos']
+            ])
+
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elements.append(table)
+
+    doc.build(elements)
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response
+
 def consultas_tributarias(request):
     consulta_vivienda_form = ConsultaViviendaForm(request.POST or None)
     consulta_zona_form = ConsultaZonaForm(request.POST or None)
@@ -501,7 +555,7 @@ def consultas_tributarias(request):
         elif 'municipio_form' in request.POST and consulta_municipio_form.is_valid():
             municipio = consulta_municipio_form.cleaned_data['municipio']
             # Procesar la consulta de pagos por municipio aquí
-            return redirect('consultas_tributarias')
+            return redirect('generar_reporte_municipio_pdf', municipio_id=municipio.pk)
 
         elif 'region_form' in request.POST and consulta_region_form.is_valid():
             region = consulta_region_form.cleaned_data['region']

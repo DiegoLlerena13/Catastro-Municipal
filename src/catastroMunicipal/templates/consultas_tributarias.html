@@ -70,11 +70,14 @@
         <form method="post" action="{% url 'consultas_tributarias' %}">
             {% csrf_token %}
             {{ consulta_municipio_form.as_p }}
-            <button type="submit" name="action" value="municipio_form">PDF</button>
+            <button type="submit" name="municipio_form">PDF</button>
+            {% if consulta_municipio_form.instance.municipio %}
+                <a href="{% url 'generar_reporte_region_pdf' consulta_municipio_form.instance.municipio.pk %}" class="btn btn-primary mb-2">Descargar PDF</a>
+            {% endif %}
             {% if consulta_municipio_form.errors %}
-            <div class="alert alert-danger">
-                {{ consulta_municipio_form.errors }}
-            </div>
+                <div class="alert alert-danger">
+                    {{ consulta_municipio_form.errors }}
+                </div>
             {% endif %}
         </form>
     </div>
