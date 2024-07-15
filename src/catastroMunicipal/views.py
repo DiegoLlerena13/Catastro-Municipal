@@ -377,3 +377,33 @@ def casa_delete(request, pk):
         return redirect('casa_list')
     return render(request, 'casa_delete.html', {'casa': casa})
 
+
+def pago_tributario_create(request):
+    if request.method == "POST":
+        form = PagoTributarioForm(request.POST)
+        if form.is_valid():
+            pago_tributario = form.save(commit=False)
+            pago_tributario.save()
+            return redirect('pago_tributario_list')
+    else:
+        form = PagoTributarioForm()
+    return render(request, 'pago_tributario_form.html', {'form': form})
+
+def pago_tributario_update(request, pk):
+    pago_tributario = get_object_or_404(PagoTributario, pk=pk)
+    if request.method == "POST":
+        form = PagoTributarioForm(request.POST, instance=pago_tributario)
+        if form.is_valid():
+            form.save()
+            return redirect('pago_tributario_list')
+    else:
+        form = PagoTributarioForm(instance=pago_tributario)
+    return render(request, 'pago_tributario_form.html', {'form': form})
+
+def pago_tributario_delete(request, pk):
+    pago_tributario = get_object_or_404(PagoTributario, pk=pk)
+    if request.method == "POST":
+        pago_tributario.delete()
+        return redirect('pago_tributario_list')
+    return render(request, 'pago_tributario_delete.html', {'pago_tributario': pago_tributario})
+

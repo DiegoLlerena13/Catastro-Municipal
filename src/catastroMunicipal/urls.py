@@ -48,5 +48,8 @@ urlpatterns = [
     path('casas/new/', views.casa_create, name='casa_create'),
     path('casas/edit/<int:pk>/', views.casa_update, name='casa_update'),
     path('casas/delete/<int:pk>/', views.casa_delete, name='casa_delete'),
+    path('pagos_tributarios/new/', views.pago_tributario_create, name='pago_tributario_create'),
+    path('pagos_tributarios/edit/<int:pk>/', views.pago_tributario_update, name='pago_tributario_update'),
+    path('pagos_tributarios/delete/<int:pk>/', views.pago_tributario_delete, name='pago_tributario_delete'),
     path('', views.base, name='base'),
 ]

@@ -216,7 +216,7 @@ class PagoTributarioForm(forms.ModelForm):
         widgets = {
             'PagTriFec': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'placeholder': 'dd/mm/aaaa'}),
             'CasCod': forms.Select(attrs={'class': 'form-control select2'}),
-            'PagTriIngFam': forms.NumberInput(attrs={'class': 'form-control'}),
+            'PagTriIngFam': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'PagTriCat': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'PagTriPag': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'PagTriEstReg': forms.Select(attrs={'class': 'form-control'}),

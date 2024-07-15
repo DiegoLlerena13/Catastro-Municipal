@@ -211,7 +211,7 @@ class PagoTributario(models.Model):
     PagTriFec = models.DateField(db_column='PagTriFec', default=timezone.now, verbose_name="Pago Tributario Fecha emitida")
     CasCod = models.ForeignKey(Casa, on_delete=models.CASCADE, db_column='CasCod', verbose_name="Código de Casa")
     PagTriIngFam = models.DecimalField(db_column='PagTriIngFam', max_digits=6, decimal_places=2, null=False, default=0, verbose_name="Ingreso Familiar")
-    PagTriCat = models.CharField(db_column='PagTriCat', max_length=1, null=True, default=' ', verbose_name="Categoria")
+    PagTriCat = models.CharField(db_column='PagTriCat', max_length=1, null=True, default='A', verbose_name="Categoria")
     PagTriPag = models.DecimalField(db_column='PagTriPag', max_digits=8, decimal_places=2, default=0, verbose_name="Pago Total")
     PagTriEstReg = models.CharField(db_column='PagTriEstReg', max_length=15, choices=ESTADOS, default="debe", verbose_name="Estado de Pago")
 
