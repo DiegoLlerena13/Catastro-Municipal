@@ -1,0 +1,29 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Lista de Tipos de Vivienda</h2>
+<a href="{% url 'tipo_vivienda_create' %}" class="btn btn-primary mb-2">Crear Nuevo Tipo de Vivienda</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Estado de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tipo_vivienda in tipos_vivienda %}
+        <tr>
+            <td>{{ tipo_vivienda.TipVivCod }}</td>
+            <td>{{ tipo_vivienda.TipVivDes }}</td>
+            <td>{{ tipo_vivienda.TipVivEstReg }}</td>
+            <td>
+                <a href="{% url 'tipo_vivienda_update' tipo_vivienda.TipVivCod %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'tipo_vivienda_delete' tipo_vivienda.TipVivCod %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

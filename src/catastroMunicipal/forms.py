@@ -66,7 +66,7 @@ class TipoViviendaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(TipoPersonaForm, self).__init__(*args, **kwargs)
+        super(TipoViviendaForm, self).__init__(*args, **kwargs)
         if not self.instance.pk:  # Si se está creando una nueva instancia
             self.fields['TipVivEstReg'].widget = forms.HiddenInput()
             self.fields['TipVivEstReg'].initial = 'A'

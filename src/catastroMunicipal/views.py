@@ -174,6 +174,66 @@ def vivienda_delete(request, pk):
         vivienda.delete()
         return redirect('vivienda_list')
     return render(request, 'vivienda_delete.html', {'vivienda': vivienda})
+def tipo_persona_create(request):
+    if request.method == "POST":
+        form = TipoPersonaForm(request.POST)
+        if form.is_valid():
+            tipo_persona = form.save(commit=False)
+            tipo_persona.tipperestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            tipo_persona.save()
+            return redirect('tipo_persona_list')
+    else:
+        form = TipoPersonaForm()
+    return render(request, 'tipo_persona_form.html', {'form': form})
+
+def tipo_persona_update(request, pk):
+    tipo_persona = get_object_or_404(TipoPersona, pk=pk)
+    if request.method == "POST":
+        form = TipoPersonaForm(request.POST, instance=tipo_persona)
+        if form.is_valid():
+            form.save()
+            return redirect('tipo_persona_list')
+    else:
+        form = TipoPersonaForm(instance=tipo_persona)
+    return render(request, 'tipo_persona_form.html', {'form': form})
+
+def tipo_persona_delete(request, pk):
+    tipo_persona = get_object_or_404(TipoPersona, pk=pk)
+    if request.method == "POST":
+        tipo_persona.delete()
+        return redirect('tipo_persona_list')
+    return render(request, 'tipo_persona_delete.html', {'tipo_persona': tipo_persona})
+
+def tipo_vivienda_create(request):
+    if request.method == "POST":
+        form = TipoViviendaForm(request.POST)
+        if form.is_valid():
+            tipo_vivienda = form.save(commit=False)
+            tipo_vivienda.tipvivestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            tipo_vivienda.save()
+            return redirect('tipo_vivienda_list')
+    else:
+        form = TipoViviendaForm()
+    return render(request, 'tipo_vivienda_form.html', {'form': form})
+
+def tipo_vivienda_update(request, pk):
+    tipo_vivienda = get_object_or_404(TipoVivienda, pk=pk)
+    if request.method == "POST":
+        form = TipoViviendaForm(request.POST, instance=tipo_vivienda)
+        if form.is_valid():
+            form.save()
+            return redirect('tipo_vivienda_list')
+    else:
+        form = TipoViviendaForm(instance=tipo_vivienda)
+    return render(request, 'tipo_vivienda_form.html', {'form': form})
+
+def tipo_vivienda_delete(request, pk):
+    tipo_vivienda = get_object_or_404(TipoVivienda, pk=pk)
+    if request.method == "POST":
+        tipo_vivienda.delete()
+        return redirect('tipo_vivienda_list')
+    return render(request, 'tipo_vivienda_delete.html', {'tipo_vivienda': tipo_vivienda})
+
 
 def familia_create(request):
     if request.method == "POST":
@@ -256,3 +316,5 @@ def persona_delete(request, pk):
         persona.delete()
         return redirect('persona_list')
     return render(request, 'persona_delete.html', {'persona': persona})
+
+
