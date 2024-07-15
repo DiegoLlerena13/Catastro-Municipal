@@ -45,5 +45,8 @@ urlpatterns = [
     path('tipo_vivienda/new/', views.tipo_vivienda_create, name='tipo_vivienda_create'),
     path('tipo_vivienda/edit/<int:pk>/', views.tipo_vivienda_update, name='tipo_vivienda_update'),
     path('tipo_vivienda/delete/<int:pk>/', views.tipo_vivienda_delete, name='tipo_vivienda_delete'),
+    path('propietarios/new/', views.propietario_create, name='propietario_create'),
+    path('propietarios/edit/<int:pk>/', views.propietario_update, name='propietario_update'),
+    path('propietarios/delete/<int:pk>/', views.propietario_delete, name='propietario_delete'),
     path('', views.base, name='base'),
 ]
