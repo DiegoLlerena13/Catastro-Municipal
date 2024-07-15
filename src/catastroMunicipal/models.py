@@ -73,7 +73,6 @@ class Vivienda(models.Model):
     VivCal = models.CharField(db_column='VivCal', max_length=3, verbose_name="Calle",validators=[MaxLengthValidator(3)])
     VivNum = models.CharField(db_column='VivNum', max_length=2, verbose_name="Número",validators=[MaxLengthValidator(2)])
     VivCodPos = models.CharField(db_column='VivCodPos', max_length=4, verbose_name="Código Postal",validators=[MaxLengthValidator(4)])
-    VivOcu = models.CharField(db_column='VivOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="Ocupada")
     ZonCod = models.ForeignKey(ZonaUrbana, on_delete=models.CASCADE, db_column='ZonCod', verbose_name="Código de Zona")
     TipVivCod = models.ForeignKey(TipoVivienda, on_delete=models.CASCADE, db_column='TipVivCod', verbose_name="Código de Tipo de Vivienda")
     VivEstReg = models.CharField(db_column='VivEstReg', max_length=1, default='A', verbose_name="Estado de Registro")

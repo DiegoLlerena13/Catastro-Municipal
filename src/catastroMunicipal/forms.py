@@ -76,12 +76,11 @@ class TipoViviendaForm(forms.ModelForm):
 class ViviendaForm(forms.ModelForm):
     class Meta:
         model = Vivienda
-        fields = ['VivCal', 'VivNum', 'VivCodPos', 'VivOcu', 'ZonCod', 'TipVivCod', 'VivEstReg']
+        fields = ['VivCal', 'VivNum', 'VivCodPos', 'ZonCod', 'TipVivCod', 'VivEstReg']
         widgets = {
             'VivCal': forms.TextInput(attrs={'class': 'form-control'}),
             'VivNum': forms.TextInput(attrs={'class': 'form-control'}),
             'VivCodPos': forms.TextInput(attrs={'class': 'form-control'}),
-            'VivOcu': forms.Select(attrs={'class': 'form-control'}),
             'ZonCod': forms.Select(attrs={'class': 'form-control select2'}),
             'TipVivCod': forms.Select(attrs={'class': 'form-control select2'}),
             'VivEstReg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
