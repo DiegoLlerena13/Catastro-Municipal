@@ -144,3 +144,33 @@ def zona_urbana_delete(request, pk):
         zona_urbana.delete()
         return redirect('zona_urbana_list')
     return render(request, 'zona_urbana_delete.html', {'zona_urbana': zona_urbana})
+
+def vivienda_create(request):
+    if request.method == "POST":
+        form = ViviendaForm(request.POST)
+        if form.is_valid():
+            vivienda = form.save(commit=False)
+            vivienda.vivestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            vivienda.save()
+            return redirect('vivienda_list')
+    else:
+        form = ViviendaForm()
+    return render(request, 'vivienda_form.html', {'form': form})
+
+def vivienda_update(request, pk):
+    vivienda = get_object_or_404(Vivienda, pk=pk)
+    if request.method == "POST":
+        form = ViviendaForm(request.POST, instance=vivienda)
+        if form.is_valid():
+            form.save()
+            return redirect('vivienda_list')
+    else:
+        form = ViviendaForm(instance=vivienda)
+    return render(request, 'vivienda_form.html', {'form': form})
+
+def vivienda_delete(request, pk):
+    vivienda = get_object_or_404(Vivienda, pk=pk)
+    if request.method == "POST":
+        vivienda.delete()
+        return redirect('vivienda_list')
+    return render(request, 'vivienda_delete.html', {'vivienda': vivienda})
