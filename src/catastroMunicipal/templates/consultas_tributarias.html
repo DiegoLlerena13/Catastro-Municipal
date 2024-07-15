@@ -29,13 +29,20 @@
     .col form .alert {
         margin-top: 10px;
     }
+
+    .consulta-results {
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+    }
 </style>
 <div class="resume-section-content">
     <h1 class="mb-0">
         Consultas Tributarias
     </h1>
     <div class="subheading mb-5">
-        En este apartado usted podrá obtener reportes basado en las consultas tributarias de los pagos realizados por vivienda, zona, municipio y región.
+        En este apartado usted podrá obtener reportes basados en las consultas tributarias de los pagos realizados por vivienda, zona, municipio y región.
     </div>
 </div>
 <div class="form-row">
@@ -44,12 +51,9 @@
         <form method="post" action="{% url 'consultas_tributarias' %}">
             {% csrf_token %}
             {{ consulta_vivienda_form.as_p }}
-            <button type="submit" name="action" value="vivienda_form">PDF</button>
-            {% if consulta_vivienda_form.errors %}
-            <div class="alert alert-danger">
-                {{ consulta_vivienda_form.errors }}
-            </div>
-            {% endif %}
+            <button type="submit" name="vivienda_form">Consultar</button>
+            <button type="submit" name="vivienda_pdf">PDF</button>
+
         </form>
     </div>
     <div class="col">
@@ -57,12 +61,9 @@
         <form method="post" action="{% url 'consultas_tributarias' %}">
             {% csrf_token %}
             {{ consulta_zona_form.as_p }}
-            <button type="submit" name="action" value="zona_form">PDF</button>
-            {% if consulta_zona_form.errors %}
-            <div class="alert alert-danger">
-                {{ consulta_zona_form.errors }}
-            </div>
-            {% endif %}
+            <button type="submit" name="zona_form">Consultar</button>
+            <button type="submit" name="zona_pdf">PDF</button>
+
         </form>
     </div>
     <div class="col">
@@ -70,33 +71,27 @@
         <form method="post" action="{% url 'consultas_tributarias' %}">
             {% csrf_token %}
             {{ consulta_municipio_form.as_p }}
-            <button type="submit" name="municipio_form">PDF</button>
-            {% if consulta_municipio_form.instance.municipio %}
-                <a href="{% url 'generar_reporte_region_pdf' consulta_municipio_form.instance.municipio.pk %}" class="btn btn-primary mb-2">Descargar PDF</a>
-            {% endif %}
-            {% if consulta_municipio_form.errors %}
-                <div class="alert alert-danger">
-                    {{ consulta_municipio_form.errors }}
-                </div>
-            {% endif %}
+            <button type="submit" name="">Consultar</button>
+            <button type="submit" name="municipio_pdf">PDF</button>
+
         </form>
     </div>
     <div class="col">
         <h5>Pagos por Región</h5>
         <form method="post" action="{% url 'consultas_tributarias' %}">
-            {% csrf_token %}
+            {% csrf_token %}A
             {{ consulta_region_form.as_p }}
-            <button type="submit" name="region_form">PDF</button>
-            {% if consulta_region_form.instance.region %}
-                <a href="{% url 'generar_reporte_region_pdf' consulta_region_form.instance.region.pk %}" class="btn btn-primary mb-2">Descargar PDF</a>
-            {% endif %}
-            {% if consulta_region_form.errors %}
-                <div class="alert alert-danger">
-                    {{ consulta_region_form.errors }}
-                </div>
-            {% endif %}
+            <button type="submit" name="">Consultar</button>
+            <button type="submit" name="region_pdf">PDF</button>
+
         </form>
     </div>
+</div>
+<div class="consulta-results">
+    {% if consulta_results %}
+        <h3>Resultados de la consulta:</h3>
+        <p>{{ consulta_results }}</p>
+    {% endif %}
 </div>
 
 {% endblock %}

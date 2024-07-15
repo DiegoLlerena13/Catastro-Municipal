@@ -545,21 +545,37 @@ def consultas_tributarias(request):
         if 'vivienda_form' in request.POST and consulta_vivienda_form.is_valid():
             vivienda = consulta_vivienda_form.cleaned_data['vivienda']
             # Procesar la consulta de pagos por vivienda aquí
-            return redirect('consultas_tributarias')
+            # Aquí deberías realizar las operaciones necesarias con la consulta por vivienda
+            consulta_results = f"Consulta realizada para vivienda: {vivienda}"
+            return render(request, 'consultas_tributarias.html', {
+                'consulta_vivienda_form': consulta_vivienda_form,
+                'consulta_zona_form': consulta_zona_form,
+                'consulta_municipio_form': consulta_municipio_form,
+                'consulta_region_form': consulta_region_form,
+                'consulta_results': consulta_results,
+            })
 
         elif 'zona_form' in request.POST and consulta_zona_form.is_valid():
             zona = consulta_zona_form.cleaned_data['zona']
             # Procesar la consulta de pagos por zona aquí
-            return redirect('consultas_tributarias')
+            # Aquí deberías realizar las operaciones necesarias con la consulta por zona
+            consulta_results = f"Consulta realizada para zona: {zona}"
+            return render(request, 'consultas_tributarias.html', {
+                'consulta_vivienda_form': consulta_vivienda_form,
+                'consulta_zona_form': consulta_zona_form,
+                'consulta_municipio_form': consulta_municipio_form,
+                'consulta_region_form': consulta_region_form,
+                'consulta_results': consulta_results,
+            })
 
-        elif 'municipio_form' in request.POST and consulta_municipio_form.is_valid():
+        elif 'municipio_pdf' in request.POST and consulta_municipio_form.is_valid():
             municipio = consulta_municipio_form.cleaned_data['municipio']
-            # Procesar la consulta de pagos por municipio aquí
+            # Redirigir a la página para generar el PDF de municipio
             return redirect('generar_reporte_municipio_pdf', municipio_id=municipio.pk)
 
-        elif 'region_form' in request.POST and consulta_region_form.is_valid():
+        elif 'region_pdf' in request.POST and consulta_region_form.is_valid():
             region = consulta_region_form.cleaned_data['region']
-            # Redirigir a la página para generar el PDF
+            # Redirigir a la página para generar el PDF de región
             return redirect('generar_reporte_region_pdf', region_id=region.pk)
 
     context = {
