@@ -145,6 +145,7 @@ class Migration(migrations.Migration):
                 ('CasNumPue', models.CharField(blank=True, db_column='CasNumPue', default='  ', max_length=2, null=True, validators=[django.core.validators.MaxLengthValidator(2), django.core.validators.RegexValidator('^[0-9]*$', 'Ingrese solo números válidos.')], verbose_name='Número de Puerta')),
                 ('CasMet', models.DecimalField(db_column='CasMet', decimal_places=2, max_digits=7, verbose_name='Metros')),
                 ('CasEstReg', models.CharField(db_column='CasEstReg', default='A', max_length=1, verbose_name='Estado de Registro')),
+                ('CasOcu', models.CharField(choices=[('S', 'Sí'), ('N', 'No')], db_column='CasOcu', default='N', max_length=1, verbose_name='¿Está ocupada?')),
                 ('FamCod', models.ForeignKey(db_column='FamCod', on_delete=django.db.models.deletion.CASCADE, to='catastroMunicipal.familia', verbose_name='Código de Familia')),
                 ('VivCod', models.ForeignKey(db_column='VivCod', on_delete=django.db.models.deletion.CASCADE, to='catastroMunicipal.vivienda', verbose_name='Código de Vivienda')),
             ],
