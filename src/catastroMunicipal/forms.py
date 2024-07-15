@@ -300,5 +300,34 @@ class PropietarioForm(forms.ModelForm):
         # Validar que la persona no sea propietario de más de una familia
         if Propietario.objects.filter(PerCod=per_cod).exists() and not self.instance.pk:
             raise forms.ValidationError("La persona seleccionada ya es propietario de una familia.")
+        
+class ConsultaViviendaForm(forms.ModelForm):
+    vivienda = forms.ModelChoiceField(queryset=Vivienda.objects.all(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+
+    class Meta:
+        model = Vivienda
+        fields = ['vivienda']
+
+class ConsultaZonaForm(forms.ModelForm):
+    zona = forms.ModelChoiceField(queryset=ZonaUrbana.objects.all(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+
+    class Meta:
+        model = ZonaUrbana
+        fields = ['zona']
+
+class ConsultaMunicipioForm(forms.ModelForm):
+    municipio = forms.ModelChoiceField(queryset=Municipio.objects.all(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+
+    class Meta:
+        model = Municipio
+        fields = ['municipio']
+
+class ConsultaRegionForm(forms.ModelForm):
+    region = forms.ModelChoiceField(queryset=Region.objects.all(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+
+    class Meta:
+        model = Region
+        fields = ['region']
+
 
     

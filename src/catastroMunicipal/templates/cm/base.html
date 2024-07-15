@@ -82,7 +82,7 @@
                     <a class="nav-link" href="{% url 'municipio_list' %}">Municipios</a>
                 </li>
                 <li class="nav-item {% if request.resolver_match.url_name == 'zona_urbana_list' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'zona_urbana_list' %}">Zona Urbana</a>
+                    <a class="nav-link" href="{% url 'zona_urbana_list' %}">Zonas</a>
                 </li>
                 <li class="nav-item {% if request.resolver_match.url_name == 'vivienda_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'vivienda_list' %}">Vivienda</a>
@@ -97,7 +97,7 @@
                     <a class="nav-link" href="{% url 'casa_list' %}">Casa</a>
                 </li>
                 <li class="nav-item {% if request.resolver_match.url_name == 'pago_tributario_list' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'pago_tributario_list' %}">Pago Tributario</a>
+                    <a class="nav-link" href="{% url 'pago_tributario_list' %}">Pagos</a>
                 </li>
                 <li class="nav-item {% if request.resolver_match.url_name == 'propietario_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'propietario_list' %}">Propietario</a>
@@ -108,6 +108,8 @@
                 <li class="nav-item {% if request.resolver_match.url_name == 'tipo_vivienda_list' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'tipo_vivienda_list' %}">Tipo de Vivienda</a>
                 </li>
+                <li class="nav-item {% if request.resolver_match.url_name == 'consultas_tributarias' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'consultas_tributarias' %}">Consultas</a>
             </ul>
         </div>
     </nav>
