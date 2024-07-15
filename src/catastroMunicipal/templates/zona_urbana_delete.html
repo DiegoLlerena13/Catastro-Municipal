@@ -1,0 +1,11 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>Eliminar Zona Urbana</h2>
+<p>¿Estás seguro de que deseas eliminar la zona urbana "{{ zona_urbana.ZonNom }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'zona_urbana_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Zona Urbana</h2>
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.ZonNom.label_tag }}
+        {{ form.ZonNom }}
+    </div>
+    <div class="form-group">
+        {{ form.MunCod.label_tag }}
+        {{ form.MunCod }}
+    </div>
+    {% if form.instance.pk %}
+        <div class="form-group">
+            {{ form.ZonEstReg.label_tag }}
+            {{ form.ZonEstReg }}
+        </div>
+        <button type="button" class="btn btn-warning" onclick="toggleZonestreg()">Cambiar Estado</button>
+    {% else %}
+        {{ form.ZonEstReg }}
+    {% endif %}
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'zona_urbana_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<script>
+function toggleZonestreg() {
+    var zonestregField = document.getElementById('id_ZonEstReg');
+    if (zonestregField.value === 'A') {
+        zonestregField.value = 'I';
+    } else {
+        zonestregField.value = 'A';
+    }
+}
+</script>
+{% endblock %}
