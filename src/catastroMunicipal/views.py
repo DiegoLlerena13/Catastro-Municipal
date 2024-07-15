@@ -242,31 +242,31 @@ def familia_create(request):
             familia = form.save(commit=False)
             familia.famestreg = 'A'
             familia.save()
-            # Redirigir a persona_create con FamCod definido
-            return redirect('persona_create_famcod_locked', fam_cod=familia.FamCod)
+            # Redirigir a persona_create2 con FamCod definido
+            return redirect('persona_create2', fam_cod=familia.FamCod)
     else:
         form = FamiliaForm()
     
     return render(request, 'familia_form.html', {'form': form})
 
-def persona_create_famcod_locked(request, fam_cod=None):
+def persona_create2(request, fam_cod=None):
     if request.method == "POST":
-        form = PersonaForm(request.POST)
+        form = PersonaForm2(request.POST)
         if form.is_valid():
             persona = form.save(commit=False)
             persona.perestreg = 'A'
-            if fam_cod:
-                persona.FamCod = fam_cod  # Asignar FamCod recibido como parámetro si está presente
             persona.save()
             return redirect('persona_list')
     else:
-        # Inicializar el formulario con FamCod predefinido y bloqueado si está presente
-        initial_data = {'FamCod': fam_cod} if fam_cod else {}
-        form = PersonaForm(initial=initial_data)
-        if fam_cod:
-            form.fields['FamCod'].widget.attrs['readonly'] = True
+        # Obtener el tipo de persona "Propietario"
+        tip_per_cod = TipoPersona.objects.get(TipPerDes="Propietario")
+        initial_data = {
+            'FamCod': fam_cod,
+            'TipPerCod': tip_per_cod.pk
+        }
+        form = PersonaForm2(initial=initial_data)
     
-    return render(request, 'persona_form_locked.html', {'form': form})
+    return render(request, 'persona_form.html', {'form': form})
 
 def persona_create(request):
     if request.method == "POST":

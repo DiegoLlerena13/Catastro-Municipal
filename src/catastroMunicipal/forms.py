@@ -108,6 +108,7 @@ class FamiliaForm(forms.ModelForm):
         super(FamiliaForm, self).__init__(*args, **kwargs)
         if not self.instance.pk:  # Si se está creando una nueva instancia
             self.fields['FamEstReg'].widget = forms.HiddenInput()
+            self.fields['FamNumInt'].initial = '1'
             self.fields['FamEstReg'].initial = 'A'
         else:  # Si se está editando una instancia existente
             self.fields['FamEstReg'].widget.attrs['readonly'] = True
@@ -165,7 +166,33 @@ class PersonaForm(forms.ModelForm):
                 existing_propietario = existing_propietario.exclude(pk=self.instance.pk)
             if existing_propietario.exists():
                 raise forms.ValidationError("Esta familia ya tiene un propietario asignado.")
-    
+
+class PersonaForm2(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = ['PerNom', 'FamCod', 'TipPerCod', 'PerEstReg']
+        widgets = {
+            'PerNom': forms.TextInput(attrs={'class': 'form-control'}),
+            'FamCod': forms.Select(attrs={'class': 'form-control','readonly': 'readonly'}),
+            'TipPerCod': forms.Select(attrs={'class': 'form-control','readonly': 'readonly'}),
+            'PerEstReg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PersonaForm2, self).__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si se está creando una nueva instancia
+            self.fields['PerEstReg'].widget = forms.HiddenInput()
+            self.fields['PerEstReg'].initial = 'A'
+        else:  # Si se está editando una instancia existente
+            self.fields['PerEstReg'].widget.attrs['readonly'] = True
+
+    def clean_PerNom(self):
+        per_nom = self.cleaned_data['PerNom']
+        if not per_nom:
+            raise forms.ValidationError("El nombre de la persona no puede ser nulo.")
+        return per_nom
+
+            
 class CasaForm(forms.ModelForm):
     class Meta:
         model = Casa
