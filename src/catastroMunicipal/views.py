@@ -317,4 +317,32 @@ def persona_delete(request, pk):
         return redirect('persona_list')
     return render(request, 'persona_delete.html', {'persona': persona})
 
+def propietario_create(request):
+    if request.method == "POST":
+        form = PropietarioForm(request.POST)
+        if form.is_valid():
+            propietario = form.save(commit=False)
+            propietario.proestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            propietario.save()
+            return redirect('propietario_list')
+    else:
+        form = PropietarioForm()
+    return render(request, 'propietario_form.html', {'form': form})
 
+def propietario_update(request, pk):
+    propietario = get_object_or_404(Propietario, pk=pk)
+    if request.method == "POST":
+        form = PropietarioForm(request.POST, instance=propietario)
+        if form.is_valid():
+            form.save()
+            return redirect('propietario_list')
+    else:
+        form = PropietarioForm(instance=propietario)
+    return render(request, 'propietario_form.html', {'form': form})
+
+def propietario_delete(request, pk):
+    propietario = get_object_or_404(Propietario, pk=pk)
+    if request.method == "POST":
+        propietario.delete()
+        return redirect('propietario_list')
+    return render(request, 'propietario_delete.html', {'propietario': propietario})
