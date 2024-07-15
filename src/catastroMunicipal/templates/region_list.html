@@ -9,14 +9,15 @@
             <th>Código</th>
             <th>Nombre</th>
             <th>Estado de Registro</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
         {% for region in regiones %}
         <tr>
-            <td>{{ region.regcod }}</td>
-            <td>{{ region.regnom }}</td>
-            <td>{{ region.regestreg }}</td>
+            <td>{{ region.RegCod }}</td>
+            <td>{{ region.RegNom }}</td>
+            <td>{{ region.RegEstReg }}</td>
             <td>
                 <a href="{% url 'region_update' region.pk %}" class="btn btn-warning btn-sm">Editar</a>
                 <a href="{% url 'region_delete' region.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
