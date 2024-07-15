@@ -1,241 +1,263 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from decimal import Decimal
-from django.utils.text import slugify
+from decimal import Decimal, ROUND_HALF_UP
+from django.utils import timezone
+from django.core.validators import RegexValidator
+from django.core.validators import MaxLengthValidator
 
 class Region(models.Model):
-    regcod = models.AutoField(db_column='RegCod', primary_key=True, verbose_name="Código")
-    regnom = models.CharField(db_column='RegNom', max_length=20, verbose_name="Nombre")
-    regestreg = models.CharField(db_column='RegEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    RegCod = models.AutoField(db_column='RegCod', primary_key=True,  verbose_name="Código")
+    RegNom = models.CharField(db_column='RegNom', max_length=20, verbose_name="Nombre", unique=True, null=False)
+    RegEstReg = models.CharField(db_column='RegEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Región"
-        verbose_name_plural = "Regiones"
-        db_table = 'region'
+        db_table = 'Region'
 
     def __str__(self):
-        return self.regnom
+        return self.RegNom
 
 class Municipio(models.Model):
-    muncod = models.AutoField(db_column='MunCod', primary_key=True, verbose_name="Código")
-    munnom = models.CharField(db_column='MunNom', max_length=20, verbose_name="Nombre")
-    munpreanu = models.DecimalField(db_column='MunPreAnu', max_digits=8, decimal_places=0, verbose_name="Presupuesto Anual")
-    munnumviv = models.IntegerField(db_column='MunNumViv', verbose_name="Número de Viviendas")
-    regcod = models.ForeignKey(Region, on_delete=models.CASCADE, db_column='RegCod', verbose_name="Código de Región")
-    munestreg = models.CharField(db_column='MunEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    MunCod = models.AutoField(db_column='MunCod', primary_key=True, verbose_name="Código")
+    MunNom = models.CharField(db_column='MunNom', max_length=20, verbose_name="Nombre", unique=True, null=False)
+    MunPreAnu = models.DecimalField(db_column='MunPreAnu', max_digits=8, decimal_places=2, default=0,verbose_name="Presupuesto Anual", null=False)
+    MunNumViv = models.IntegerField(db_column='MunNumViv', default=0, verbose_name="Número de Viviendas", null=True)
+    RegCod = models.ForeignKey(Region, on_delete=models.CASCADE, db_column='RegCod', verbose_name="Código de Región")
+    MunEstReg = models.CharField(db_column='MunEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Municipio"
-        verbose_name_plural = "Municipios"
-        db_table = 'municipio'
+        db_table = 'Municipio'
 
     def __str__(self):
-        return self.munnom
+        return self.MunNom
 
 class ZonaUrbana(models.Model):
-    zoncod = models.AutoField(db_column='ZonCod', primary_key=True, verbose_name="Código")
-    zonnom = models.CharField(db_column='ZonNom', max_length=20, verbose_name="Nombre")
-    muncod = models.ForeignKey(Municipio, on_delete=models.CASCADE, db_column='MunCod', verbose_name="Código de Municipio")
-    zonestreg = models.CharField(db_column='ZonEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    ZonCod = models.AutoField(db_column='ZonCod', primary_key=True, verbose_name="Código")
+    ZonNom = models.CharField(db_column='ZonNom', max_length=20, verbose_name="Nombre", unique=True, null=False)
+    MunCod = models.ForeignKey(Municipio, on_delete=models.CASCADE, db_column='MunCod', verbose_name="Código de Municipio")
+    ZonEstReg = models.CharField(db_column='ZonEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Zona Urbana"
-        verbose_name_plural = "Zonas Urbanas"
-        db_table = 'zona_urbana'
+        db_table = 'Zona_Urbana'
 
     def __str__(self):
-        return self.zonnom
+        return self.ZonNom
 
 class TipoVivienda(models.Model):
-    tipvivcod = models.AutoField(db_column='TipVivCod', primary_key=True, verbose_name="Código")
-    tipvivdes = models.CharField(db_column='TipVivDes', max_length=15, verbose_name="Descripción")
-    tipvivestreg = models.CharField(db_column='TipVivEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    TipVivCod = models.AutoField(db_column='TipVivCod', primary_key=True, verbose_name="Código")
+    TipVivDes = models.CharField(db_column='TipVivDes', max_length=15, verbose_name="Descripción", unique=True, null=False)
+    TipVivEstReg = models.CharField(db_column='TipVivEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Tipo de Vivienda"
-        verbose_name_plural = "Tipos de Vivienda"
-        db_table = 'tipo_vivienda'
+        db_table = 'Tipo_Vivienda'
 
     def __str__(self):
-        return self.tipvivdes
+        return self.TipVivDes
 
 class Vivienda(models.Model):
-    vivcod = models.AutoField(db_column='VivCod', primary_key=True, verbose_name="Código")
-    vivcal = models.CharField(db_column='VivCal', max_length=3, verbose_name="Calle")
-    vivnum = models.IntegerField(db_column='VivNum', verbose_name="Número")
-    vivcodpos = models.IntegerField(db_column='VivCodPos', verbose_name="Código Postal")
-    vivocu = models.CharField(db_column='VivOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="Ocupada")
-    zoncod = models.ForeignKey('ZonaUrbana', on_delete=models.CASCADE, db_column='ZonCod', verbose_name="Código de Zona")
-    tipvivcod = models.ForeignKey('TipoVivienda', on_delete=models.CASCADE, db_column='TipVivCod', verbose_name="Código de Tipo de Vivienda")
-    vivestreg = models.CharField(db_column='VivEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    VivCod = models.AutoField(db_column='VivCod', primary_key=True, verbose_name="Código")
+    VivCal = models.CharField(db_column='VivCal', max_length=3, verbose_name="Calle",validators=[MaxLengthValidator(3)])
+    VivNum = models.CharField(db_column='VivNum', max_length=2, verbose_name="Número",validators=[MaxLengthValidator(2)])
+    VivCodPos = models.CharField(db_column='VivCodPos', max_length=4, verbose_name="Código Postal",validators=[MaxLengthValidator(4)])
+    VivOcu = models.CharField(db_column='VivOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="Ocupada")
+    ZonCod = models.ForeignKey(ZonaUrbana, on_delete=models.CASCADE, db_column='ZonCod', verbose_name="Código de Zona")
+    TipVivCod = models.ForeignKey(TipoVivienda, on_delete=models.CASCADE, db_column='TipVivCod', verbose_name="Código de Tipo de Vivienda")
+    VivEstReg = models.CharField(db_column='VivEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Vivienda"
-        verbose_name_plural = "Viviendas"
-        db_table = 'vivienda'
-        unique_together = [['vivcal', 'vivnum', 'vivcodpos']]  # Define la combinación única de campos
+        db_table = 'Vivienda'
+        unique_together = [['VivCal', 'VivNum']]  # Define la combinación única de campos
 
     def __str__(self):
-        return f"Vivienda {self.vivcod}"
+        return f"Vivienda {self.VivCod}"
 
     def clean(self):
-        # Validar que vivnum y vivcodpos no sean menores que 0
-        if self.vivnum <= 0 or self.vivcodpos <= 0:
-            raise ValidationError("El número de vivienda y el código postal deben ser mayores o iguales que cero.")
-
-        # Validar que no exista otra vivienda con el mismo nombre de calle (ignorando mayúsculas y minúsculas)
-        existing_vivienda = Vivienda.objects.filter(vivcal__iexact=self.vivcal, vivnum=self.vivnum, vivcodpos=self.vivcodpos)
-        if self.pk:
-            existing_vivienda = existing_vivienda.exclude(pk=self.pk)  # Excluir la instancia actual al editar
-        if existing_vivienda.exists():
-            raise ValidationError("Ya existe una vivienda con el mismo nombre de calle, número y código postal.")
+        # Validar que todos los campos obligatorios sean ingresados
+        if not self.VivCal or not self.VivNum or not self.VivCodPos or not self.VivOcu or not self.ZonCod or not self.TipVivCod:
+            raise ValidationError("Todos los campos de Vivienda son obligatorios.")
+            
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Realizar la validación antes de guardar
+        super().save(*args, **kwargs)
 
 class Familia(models.Model):
-    famcod = models.AutoField(db_column='FamCod', primary_key=True, verbose_name="Código")
-    famnom = models.CharField(db_column='FamNom', max_length=15, verbose_name="Nombre")
-    famnumint = models.IntegerField(db_column='FamNumInt', verbose_name="Número de Integrantes", default=1)
-    famestreg = models.CharField(db_column='FamEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
-
+    FamCod = models.AutoField(db_column ='FamCod',primary_key=True, verbose_name="Código")
+    FamNom = models.CharField(db_column ='FamNom',max_length=15,verbose_name="Nombre")
+    FamNumInt = models.IntegerField(db_column ='FamNumInt',default=0,verbose_name="Número de Integrantes")
+    FamEstReg = models.CharField(db_column='FamEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
     class Meta:
-        verbose_name = "Familia"
-        verbose_name_plural = "Familias"
-        db_table = 'familia'
+        db_table = 'Familia'
 
     def __str__(self):
-        return self.famnom
-
-    def update_num_integrantes(self):
-        self.famnumint = self.persona_set.count()
-        self.save(update_fields=['famnumint'])
+        return self.FamNom
 
 class TipoPersona(models.Model):
-    tippercod = models.AutoField(db_column='TipPerCod', primary_key=True, verbose_name="Código")
-    tipperdes = models.CharField(db_column='TipPerDes', max_length=15, verbose_name="Descripción")
-    tipvivestreg = models.CharField(db_column='TipVivEstReg', max_length=1, verbose_name="Estado de Registro")
+    TipPerCod = models.AutoField(db_column='TipPerCod',primary_key=True,verbose_name="Código")
+    TipPerDes = models.CharField(db_column='TipPerDes',max_length=15,verbose_name="Descripción", unique=True)
+    TipPerEstReg = models.CharField(db_column='TipPerEstReg',max_length=1, default='A',verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Tipo de Persona"
-        verbose_name_plural = "Tipos de Persona"
-        db_table = 'tipo_persona'
+        db_table = 'Tipo_Persona'
 
     def __str__(self):
-        return self.tipperdes
+        return self.TipPerDes
 
 class Persona(models.Model):
-    percod = models.AutoField(db_column='PerCod', primary_key=True, verbose_name="Código")
-    pernom = models.CharField(db_column='PerNom', max_length=15, verbose_name="Nombre")
-    perapepat = models.CharField(db_column='PerApePat', max_length=10, verbose_name="Apellido Paterno")
-    perapemat = models.CharField(db_column='PerApeMat', max_length=10, verbose_name="Apellido Materno")
-    famcod = models.ForeignKey(Familia, on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
-    tippercod = models.ForeignKey('TipoPersona', on_delete=models.CASCADE, db_column='TipPerCod', verbose_name="Código de Tipo de Persona")
-    perestreg = models.CharField(db_column='PerEstReg', max_length=1, verbose_name="Estado de Registro", default='A')
+    PerCod = models.AutoField(db_column='PerCod',primary_key=True,verbose_name="Código")
+    PerNom = models.CharField(db_column='PerNom',max_length=20,verbose_name="Nombres")
+    FamCod = models.ForeignKey(Familia, on_delete=models.CASCADE, db_column='FamCod',verbose_name="Código de Familia")
+    TipPerCod = models.ForeignKey(TipoPersona, on_delete=models.CASCADE, db_column='TipPerCod',verbose_name="Tipo Persona Código")
+    PerEstReg = models.CharField(db_column='PerEstReg',max_length=1, default='A',verbose_name="Estado de Registro")
 
     class Meta:
-        verbose_name = "Persona"
-        verbose_name_plural = "Personas"
-        db_table = 'persona'
+        db_table = 'Persona'
 
     def __str__(self):
-        return f"{self.pernom} {self.perapepat} {self.perapemat}"
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.famcod.update_num_integrantes()
-
-    def delete(self, *args, **kwargs):
-        familia = self.famcod
-        super().delete(*args, **kwargs)
-        familia.update_num_integrantes()
-
-class Casa(models.Model):
-    cascod = models.AutoField(db_column='CasCod', primary_key=True, verbose_name="Código")
-    vivcod = models.ForeignKey('Vivienda', on_delete=models.CASCADE, db_column='VivCod', verbose_name="Código de Vivienda")
-    casesc = models.IntegerField(db_column='CasEsc', null=True, blank=True, verbose_name="Escalera")
-    cascodblo = models.CharField(db_column='CasCodBlo', max_length=1, null=True, blank=True, verbose_name="Bloque")
-    caspla = models.IntegerField(db_column='CasPla', null=True, blank=True, verbose_name="Planta")
-    casnumpue = models.IntegerField(db_column='CasNumPue', null=True, blank=True, verbose_name="Número de Puerta")
-    casmet = models.DecimalField(db_column='CasMet', max_digits=5, decimal_places=0, blank=True, verbose_name="Metros")
-    famcod = models.ForeignKey('Familia', on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
-    casestreg = models.CharField(db_column='CasEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
-    casocu = models.CharField(db_column='CasOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="¿Está ocupada?")
-
-    class Meta:
-        verbose_name = "Casa"
-        verbose_name_plural = "Casas"
-        db_table = 'casa'
-
-    def __str__(self):
-        return f"Casa {self.cascod}"
+        return self.PerNom
 
     def clean(self):
+        # Validar que el nombre no sea nulo
+        if not self.PerNom:
+            raise ValidationError("El nombre de la persona no puede ser nulo.")
+        
+        tipo_propietario = TipoPersona.objects.get(TipPerDes='Propietario')
+        if self.TipPerCod == tipo_propietario:
+            existing_propietario = Persona.objects.filter(FamCod=self.FamCod, TipPerCod=tipo_propietario)
+            if self.pk:
+                existing_propietario = existing_propietario.exclude(pk=self.pk)  # Excluir la instancia actual al editar
+            if existing_propietario.exists():
+                raise ValidationError("Esta familia ya tiene un propietario asignado.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Realizar la validación antes de guardar
+        super().save(*args, **kwargs)
+
+class Casa(models.Model):
+    CasCod = models.AutoField(db_column='CasCod',primary_key=True,verbose_name="Código")
+    CasEsc = models.CharField(db_column='CasEsc', max_length=2, default='  ', null=True, verbose_name="Escalera", blank=True, validators=[MaxLengthValidator(2),RegexValidator(r'^[0-9]*$', 'Ingrese solo números válidos.')])
+    CasCodBlo = models.CharField(db_column='CasCodBlo', max_length=2, default=' ',blank=True,validators=[MaxLengthValidator(2)], null=True, verbose_name="Código de Bloque")
+    CasPla = models.CharField(db_column='CasPla', max_length=2, default='  ', null=True, verbose_name="Planta", blank=True, validators=[MaxLengthValidator(2),RegexValidator(r'^[0-9]*$', 'Ingrese solo números válidos.')])
+    CasNumPue = models.CharField(db_column='CasNumPue', max_length=2, default='  ', null=True, verbose_name="Número de Puerta", blank=True, validators=[MaxLengthValidator(2),RegexValidator(r'^[0-9]*$', 'Ingrese solo números válidos.')])
+    CasMet = models.DecimalField(db_column='CasMet', max_digits=7, decimal_places=2, verbose_name="Metros", null=False)
+    VivCod = models.ForeignKey(Vivienda, on_delete=models.CASCADE, db_column='VivCod', verbose_name="Código de Vivienda")
+    FamCod = models.ForeignKey(Familia, on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
+    CasEstReg = models.CharField(db_column='CasEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+
+    class Meta:
+        db_table = 'Casa'
+        unique_together = [['CasEsc', 'CasCodBlo', 'CasPla', 'CasNumPue']]  # Define la combinación única de campos
+
+    def __str__(self):
+        return f"Casa {self.CasCod}"
+
+    def clean(self):
+        # Validar que CasMet no sea nulo
+        if not self.CasMet:
+            raise ValidationError("El campo CasMet no puede ser nulo.")
+
         # Validar que solo una familia puede tener una casa
-        existing_casa = Casa.objects.filter(famcod=self.famcod)
+        existing_casa = Casa.objects.filter(FamCod=self.FamCod)
         if self.pk:
             existing_casa = existing_casa.exclude(pk=self.pk)  # Excluir la instancia actual al editar
         if existing_casa.exists():
             raise ValidationError("Esta familia ya tiene asignada una casa.")
+        
+         # Validar que solo una familia puede tener una casa si la vivienda es de tipo "Particular"
+        if self.VivCod.TipVivCod.TipVivDes == "Particular":
+            existing_casa = Casa.objects.filter(VivCod=self.VivCod)
+            if self.pk:
+                existing_casa = existing_casa.exclude(pk=self.pk)  # Excluir la instancia actual al editar
+            if existing_casa.exists():
+                raise ValidationError("Ya existe una casa asignada a esta vivienda particular.")
+            if self.CasEsc or self.CasCodBlo or self.CasPla or self.CasNumPue:
+                raise ValidationError("Los campos CasEsc, CasCodBlo, CasPla y CasNumPue deben estar vacíos si la vivienda no es de tipo BloqueCasa.")
 
+        # Validar campos específicos si la vivienda es del tipo "BloqueCasa"
+        if self.VivCod.TipVivCod.TipVivDes == "BloqueCasa":
+            if not self.CasEsc or not self.CasCodBlo or not self.CasPla or not self.CasNumPue:
+                raise ValidationError("Los campos CasEsc, CasCodBlo, CasPla y CasNumPue son obligatorios si la vivienda es de tipo 'BloqueCasa'.")
+    
     def save(self, *args, **kwargs):
-        try:
-            self.full_clean()  # Llama a clean() antes de guardar para validar
-            super().save(*args, **kwargs)
-        except ValidationError as e:
-            # Imprimir el error pero no redirigir a la página de error
-            print(f"Error al guardar la casa: {e}")
+        self.full_clean()  # Llama a clean() antes de guardar para validar
+        super().save(*args, **kwargs)
 
 class PagoTributario(models.Model):
-    pagtricod = models.AutoField(db_column='PagTriCod', primary_key=True, verbose_name="Código")
-    pagtrifec = models.DateField(db_column='PagTriFec', verbose_name="Fecha")
-    cascod = models.ForeignKey(Casa, on_delete=models.CASCADE, db_column='CasCod', verbose_name="Código de Casa")
-    pagtriestreg = models.CharField(db_column='PagTriEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    ESTADOS = [
+        ('en proceso', 'En Proceso'),
+        ('pagada', 'Pagada'),
+        ('debe', 'Debe')
+    ]
+
+    PagTriCod = models.AutoField(db_column='PagTriCod', primary_key=True, verbose_name="Pago Tributario Codigo")
+    PagTriFec = models.DateField(db_column='PagTriFec', default=timezone.now, verbose_name="Pago Tributario Fecha emitida")
+    CasCod = models.ForeignKey(Casa, on_delete=models.CASCADE, db_column='CasCod', verbose_name="Código de Casa")
+    PagTriIngFam = models.DecimalField(db_column='PagTriIngFam', max_digits=6, decimal_places=2, null=False, default=0, verbose_name="Ingreso Familiar")
+    PagTriCat = models.CharField(db_column='PagTriCat', max_length=1, null=True, default=' ', verbose_name="Categoria")
+    PagTriPag = models.DecimalField(db_column='PagTriPag', max_digits=8, decimal_places=2, default=0, verbose_name="Pago Total")
+    PagTriEstReg = models.CharField(db_column='PagTriEstReg', max_length=15, choices=ESTADOS, default="debe", verbose_name="Estado de Pago")
 
     class Meta:
-        verbose_name = "Pago Tributario"
-        verbose_name_plural = "Pagos Tributarios"
-        db_table = 'pago_tributario'
+        db_table = 'Pago_Tributario'
+        unique_together = [['CasCod']] 
 
     def __str__(self):
-        return f"Pago {self.pagtricod}"
-
-class Propietario(models.Model):
-    procod = models.AutoField(db_column='ProCod', primary_key=True, verbose_name="Código")
-    propagtri = models.DecimalField(db_column='ProPagTri', max_digits=8, decimal_places=2, verbose_name="Pago Tributario", editable=False)
-    promoningfam = models.DecimalField(db_column='ProMonIngFam', max_digits=8, decimal_places=0, verbose_name="Ingresos Familiares")
-    percod = models.ForeignKey('Persona', on_delete=models.CASCADE, db_column='PerCod', verbose_name="Código de Persona")
-    famcod = models.ForeignKey('Familia', on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
-    proestreg = models.CharField(db_column='ProEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
-
-    class Meta:
-        verbose_name = "Propietario"
-        verbose_name_plural = "Propietarios"
-        db_table = 'propietario'
-
-    def __str__(self):
-        return f"Propietario {self.procod}"
-
-    def clean_promoningfam(self):
-        promoningfam = self.cleaned_data['promoningfam']
-        if promoningfam <= Decimal('0'):
-            raise ValidationError("El monto de ingreso familiar debe ser mayor que cero.")
-        return promoningfam
+        return f"Pago {self.PagTriCod}"
     
     def clean(self):
-        # Validar que solo puede haber un propietario por familia
-        if Propietario.objects.filter(famcod=self.famcod).exists() and self.pk is None:
-            raise ValidationError("Ya existe un propietario para esta familia.")
+        # Validar que no haya duplicados de casa
+        if PagoTributario.objects.filter(CasCod=self.CasCod).exists() and self.pk is None:
+            raise ValidationError("Esta casa ya tiene un pago tributario asignado.")
+
+    def save(self, *args, **kwargs):
+        propietario = Propietario.objects.filter(PerCod__FamCod=self.CasCod.FamCod).first()
+        if propietario:
+            self.PagTriIngFam = propietario.ProMonIngFam
+            # Asignar la categoría basada en el ingreso familiar
+            if self.PagTriIngFam < 1000:
+                self.PagTriCat = 'A'
+            elif 1000 <= self.PagTriIngFam < 2500:
+                self.PagTriCat = 'B'
+            else:
+                self.PagTriCat = 'C'
+                
+            if self.PagTriCat == 'A':
+                self.PagTriPag = Decimal(self.PagTriIngFam) * Decimal('0.10')
+            elif self.PagTriCat == 'B':
+                self.PagTriPag = Decimal(self.PagTriIngFam) * Decimal('0.15')
+            elif self.PagTriCat == 'C':
+                self.PagTriPag = Decimal(self.PagTriIngFam) * Decimal('0.20')
+            self.PagTriPag = self.PagTriPag.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        else:
+            raise ValidationError("No se encontró un propietario para esta casa.")
+        
+        self.full_clean()  # Realizar la validación antes de guardar
+        super().save(*args, **kwargs)
+    
+class Propietario(models.Model):
+    ProCod = models.AutoField(db_column='ProCod', primary_key=True, verbose_name="Código")
+    ProMonIngFam = models.DecimalField(db_column='ProMonIngFam', max_digits=10, decimal_places=2, default=0, verbose_name="Monto Ingreso Familiar")
+    PerCod = models.ForeignKey(Persona, on_delete=models.CASCADE, db_column='PerCod', verbose_name="Código de Persona")
+    ProEstReg = models.CharField(db_column='ProEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+
+    class Meta:
+        db_table = 'Propietario'
+
+    def __str__(self):
+        return f"Propietario {self.ProCod}"
+
+    def clean(self):
+        # Validar que ProMonIngFam no sea nulo
+        if not self.ProMonIngFam:
+            raise ValidationError("El campo ProMonIngFam no puede ser nulo.")
 
         # Validar que la persona tiene el tipo "Propietario"
-        if self.percod.tippercod.tipperdes != "Propietario":
+        if self.PerCod.TipPerCod.TipPerDes != "Propietario":
             raise ValidationError("La persona seleccionada no tiene el tipo de persona 'Propietario'.")
 
         # Validar que la persona no sea propietario de más de una familia
-        if Propietario.objects.filter(percod=self.percod).exists() and self.pk is None:
-            raise ValidationError("La persona seleccionada ya es propietario de otra familia.")
-        
+        if Propietario.objects.filter(PerCod=self.PerCod).exists() and self.pk is None:
+            raise ValidationError("La persona seleccionada ya es propietario una familia.")
+
     def save(self, *args, **kwargs):
-        # Calcular el pago tributario
-        self.propagtri = self.promoningfam * Decimal('0.1')  # Multiplicar por 0.1 como Decimal
 
         self.full_clean()  # Validar antes de guardar
         super().save(*args, **kwargs)
-
