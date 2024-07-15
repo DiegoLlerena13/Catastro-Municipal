@@ -55,3 +55,32 @@ def pago_tributario_list(request):
     pagos_tributarios = PagoTributario.objects.all()
     return render(request, 'pago_tributario_list.html', {'pagos_tributarios': pagos_tributarios})
 
+def region_create(request):
+    if request.method == "POST":
+        form = RegionForm(request.POST)
+        if form.is_valid():
+            region = form.save(commit=False)
+            region.regestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            region.save()
+            return redirect('region_list')
+    else:
+        form = RegionForm()
+    return render(request, 'region_form.html', {'form': form})
+
+def region_update(request, pk):
+    region = get_object_or_404(Region, pk=pk)
+    if request.method == "POST":
+        form = RegionForm(request.POST, instance=region)
+        if form.is_valid():
+            form.save()
+            return redirect('region_list')
+    else:
+        form = RegionForm(instance=region)
+    return render(request, 'region_form.html', {'form': form, 'region': region})
+
+def region_delete(request, pk):
+    region = get_object_or_404(Region, pk=pk)
+    if request.method == "POST":
+        region.delete()
+        return redirect('region_list')
+    return render(request, 'region_delete.html', {'region': region})
