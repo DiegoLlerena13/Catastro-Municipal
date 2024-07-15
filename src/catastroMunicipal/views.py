@@ -346,3 +346,34 @@ def propietario_delete(request, pk):
         propietario.delete()
         return redirect('propietario_list')
     return render(request, 'propietario_delete.html', {'propietario': propietario})
+
+def casa_create(request):
+    if request.method == "POST":
+        form = CasaForm(request.POST)
+        if form.is_valid():
+            casa = form.save(commit=False)
+            casa.casaestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            casa.save()
+            return redirect('casa_list')
+    else:
+        form = CasaForm()
+    return render(request, 'casa_form.html', {'form': form})
+
+def casa_update(request, pk):
+    casa = get_object_or_404(Casa, pk=pk)
+    if request.method == "POST":
+        form = CasaForm(request.POST, instance=casa)
+        if form.is_valid():
+            form.save()
+            return redirect('casa_list')
+    else:
+        form = CasaForm(instance=casa)
+    return render(request, 'casa_form.html', {'form': form})
+
+def casa_delete(request, pk):
+    casa = get_object_or_404(Casa, pk=pk)
+    if request.method == "POST":
+        casa.delete()
+        return redirect('casa_list')
+    return render(request, 'casa_delete.html', {'casa': casa})
+
