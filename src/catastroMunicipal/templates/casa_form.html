@@ -1,0 +1,77 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Casa</h2>
+
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> Por favor corrige los siguientes errores.<br><br>
+    <ul>
+        {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+        <li>{{ field|capfirst }}: {{ error }}</li>
+        {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.VivCod.label_tag }}
+        {{ form.VivCod }}
+    </div>
+    <div class="form-group">
+        {{ form.CasEsc.label_tag }}
+        {{ form.CasEsc }}
+    </div>
+    <div class="form-group">
+        {{ form.CasCodBlo.label_tag }}
+        {{ form.CasCodBlo }}
+    </div>
+    <div class="form-group">
+        {{ form.CasPla.label_tag }}
+        {{ form.CasPla }}
+    </div>
+    <div class="form-group">
+        {{ form.CasNumPue.label_tag }}
+        {{ form.CasNumPue }}
+    </div>
+    <div class="form-group">
+        {{ form.CasMet.label_tag }}
+        {{ form.CasMet }}
+    </div>
+    <div class="form-group">
+        {{ form.FamCod.label_tag }}
+        {{ form.FamCod }}
+    </div>
+    {% if form.instance.pk %}
+    <div class="form-group">
+        {{ form.CasEstReg.label_tag }}
+        {{ form.CasEstReg }}
+    </div>
+    <button type="button" class="btn btn-warning" onclick="toggleCasestreg()">Cambiar Estado</button>
+    {% else %}
+    {{ form.CasEstReg }}
+    {% endif %}
+    <div class="form-group">
+        {{ form.CasOcu.label_tag }}
+        {{ form.CasOcu }}
+    </div>
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'casa_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<script>
+function toggleCasestreg() {
+    var casestregField = document.getElementById('id_CasEstReg');
+    if (casestregField.value === 'A') {
+        casestregField.value = 'I';
+    } else {
+        casestregField.value = 'A';
+    }
+}
+</script>
+{% endblock %}
+

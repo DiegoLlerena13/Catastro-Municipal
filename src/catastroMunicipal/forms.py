@@ -169,7 +169,7 @@ class PersonaForm(forms.ModelForm):
 class CasaForm(forms.ModelForm):
     class Meta:
         model = Casa
-        fields = ['CasEsc', 'CasCodBlo', 'CasPla', 'CasNumPue', 'CasMet', 'VivCod', 'FamCod', 'CasEstReg']
+        fields = ['CasEsc', 'CasCodBlo', 'CasPla', 'CasNumPue', 'CasMet', 'VivCod', 'FamCod', 'CasEstReg', 'CasOcu']
         widgets = {
             'VivCod': forms.Select(attrs={'class': 'form-control select2'}),
             'CasEsc': forms.TextInput(attrs={'class': 'form-control'}),
