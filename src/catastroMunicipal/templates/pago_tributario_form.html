@@ -1,0 +1,50 @@
+{% extends 'cm/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Pago Tributario</h2>
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.PagTriFec.label_tag }}
+        {{ form.PagTriFec }}
+    </div>
+    <div class="form-group">
+        {{ form.CasCod.label_tag }}
+        {{ form.CasCod }}
+    </div>
+    <div class="form-group">
+        {{ form.PagTriIngFam.label_tag }}
+        {{ form.PagTriIngFam }}
+    </div>
+    <div class="form-group">
+        {{ form.PagTriCat.label_tag }}
+        {{ form.PagTriCat }}
+    </div>
+    <div class="form-group">
+        {{ form.PagTriPag.label_tag }}
+        {{ form.PagTriPag }}
+    </div>
+    {% if form.instance.pk %}
+        <div class="form-group">
+            {{ form.PagTriEstReg.label_tag }}
+            {{ form.PagTriEstReg }}
+        </div>
+        <button type="button" class="btn btn-warning" onclick="togglePagTriEstReg()">Cambiar Estado</button>
+    {% else %}
+        {{ form.PagTriEstReg }}
+    {% endif %}
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'pago_tributario_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<script>
+    function togglePagTriEstReg() {
+        var pagTriEstRegField = document.getElementById('id_PagTriEstReg');
+        if (pagTriEstRegField.value === 'debe') {
+            pagTriEstRegField.value = 'pagada';
+        } else {
+            pagTriEstRegField.value = 'debe';
+        }
+    }
+</script>
+{% endblock %}
