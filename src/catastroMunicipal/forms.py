@@ -100,7 +100,7 @@ class FamiliaForm(forms.ModelForm):
         fields = ['FamNom', 'FamNumInt', 'FamEstReg']
         widgets = {
             'FamNom': forms.TextInput(attrs={'class': 'form-control'}),
-            'FamNumInt': forms.NumberInput(attrs={'class': 'form-control'}),
+            'FamNumInt': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'FamEstReg': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 

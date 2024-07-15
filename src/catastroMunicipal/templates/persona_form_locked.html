@@ -24,7 +24,7 @@
     </div>
     <div class="form-group">
         {{ form.FamCod.label_tag }}
-        {{ form.FamCod }}
+        <input type="text" id="id_FamCod" name="{{ form.FamCod.html_name }}" {% if form.instance.pk %}value="{{ form.FamCod.value }}" {% else %}value="{{ form.initial.FamCod }}" {% endif %} readonly class="form-control">
     </div>
     <div class="form-group">
         {{ form.TipPerCod.label_tag }}

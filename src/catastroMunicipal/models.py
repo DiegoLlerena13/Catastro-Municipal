@@ -96,7 +96,7 @@ class Vivienda(models.Model):
 class Familia(models.Model):
     FamCod = models.AutoField(db_column ='FamCod',primary_key=True, verbose_name="Código")
     FamNom = models.CharField(db_column ='FamNom',max_length=15,verbose_name="Nombre")
-    FamNumInt = models.IntegerField(db_column ='FamNumInt',default=0,verbose_name="Número de Integrantes")
+    FamNumInt = models.IntegerField(db_column ='FamNumInt',default=1,verbose_name="Número de Integrantes")
     FamEstReg = models.CharField(db_column='FamEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
     class Meta:
         db_table = 'Familia'
