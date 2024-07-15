@@ -86,7 +86,7 @@ class Vivienda(models.Model):
 
     def clean(self):
         # Validar que todos los campos obligatorios sean ingresados
-        if not self.VivCal or not self.VivNum or not self.VivCodPos or not self.VivOcu or not self.ZonCod or not self.TipVivCod:
+        if not self.VivCal or not self.VivNum or not self.VivCodPos or not self.ZonCod or not self.TipVivCod:
             raise ValidationError("Todos los campos de Vivienda son obligatorios.")
             
     def save(self, *args, **kwargs):
