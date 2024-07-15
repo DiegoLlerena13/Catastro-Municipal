@@ -114,3 +114,33 @@ def municipio_delete(request, pk):
         municipio.delete()
         return redirect('municipio_list')
     return render(request, 'municipio_delete.html', {'municipio': municipio})
+
+def zona_urbana_create(request):
+    if request.method == "POST":
+        form = ZonaUrbanaForm(request.POST)
+        if form.is_valid():
+            zona_urbana = form.save(commit=False)
+            zona_urbana.zonurbestreg = 'A'  # Asegurarse de que el estado por defecto sea 'A'
+            zona_urbana.save()
+            return redirect('zona_urbana_list')
+    else:
+        form = ZonaUrbanaForm()
+    return render(request, 'zona_urbana_form.html', {'form': form})
+
+def zona_urbana_update(request, pk):
+    zona_urbana = get_object_or_404(ZonaUrbana, pk=pk)
+    if request.method == "POST":
+        form = ZonaUrbanaForm(request.POST, instance=zona_urbana)
+        if form.is_valid():
+            form.save()
+            return redirect('zona_urbana_list')
+    else:
+        form = ZonaUrbanaForm(instance=zona_urbana)
+    return render(request, 'zona_urbana_form.html', {'form': form})
+
+def zona_urbana_delete(request, pk):
+    zona_urbana = get_object_or_404(ZonaUrbana, pk=pk)
+    if request.method == "POST":
+        zona_urbana.delete()
+        return redirect('zona_urbana_list')
+    return render(request, 'zona_urbana_delete.html', {'zona_urbana': zona_urbana})
