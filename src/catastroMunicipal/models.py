@@ -141,6 +141,7 @@ class Casa(models.Model):
     VivCod = models.ForeignKey(Vivienda, on_delete=models.CASCADE, db_column='VivCod', verbose_name="Código de Vivienda")
     FamCod = models.ForeignKey(Familia, on_delete=models.CASCADE, db_column='FamCod', verbose_name="Código de Familia")
     CasEstReg = models.CharField(db_column='CasEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
+    CasOcu = models.CharField(db_column='CasOcu', max_length=1, default='N', choices=[('S', 'Sí'), ('N', 'No')], verbose_name="¿Está ocupada?")
 
     class Meta:
         db_table = 'Casa'
