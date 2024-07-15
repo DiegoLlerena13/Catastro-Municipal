@@ -1,13 +1,11 @@
 from django.db import models
+from django.db.models import Sum, Count
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 from django.core.validators import RegexValidator, MaxLengthValidator
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-from django.db import transaction
-from django.db.models import Sum
-
 
 class Region(models.Model):
     RegCod = models.AutoField(db_column='RegCod', primary_key=True,  verbose_name="Código")
@@ -23,7 +21,7 @@ class Region(models.Model):
 class Municipio(models.Model):
     MunCod = models.AutoField(db_column='MunCod', primary_key=True, verbose_name="Código")
     MunNom = models.CharField(db_column='MunNom', max_length=20, verbose_name="Nombre", unique=True, null=False)
-    MunPreAnu = models.DecimalField(db_column='MunPreAnu', max_digits=8, decimal_places=2, default=0, verbose_name="Presupuesto Anual", null=False)
+    MunPreAnu = models.DecimalField(db_column='MunPreAnu', max_digits=8, decimal_places=2, default=0,verbose_name="Presupuesto Anual", null=False)
     MunNumViv = models.IntegerField(db_column='MunNumViv', default=0, verbose_name="Número de Viviendas", null=True)
     RegCod = models.ForeignKey(Region, on_delete=models.CASCADE, db_column='RegCod', verbose_name="Código de Región")
     MunEstReg = models.CharField(db_column='MunEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
@@ -33,30 +31,20 @@ class Municipio(models.Model):
 
     def __str__(self):
         return self.MunNom
-    
-    @classmethod
-    def actualizar_presupuesto_anual(cls, mun_id):
-        municipio = cls.objects.get(pk=mun_id)
-        total_pagos = PagoTributario.objects.filter(CasCod__VivCod__ZonCod__MunCod=municipio).aggregate(total=Sum('PagTriPag'))['total'] or Decimal('0.00')
-        municipio.MunPreAnu = total_pagos
-        municipio.save()
 
-    def actualizar_numero_viviendas(self):
-        self.MunNumViv = Vivienda.objects.filter(ZonCod__MunCod=self).count()
+    def update_presupuesto_anual(self):
+        total_pagos = PagoTributario.objects.filter(
+            CasCod__VivCod__ZonCod__MunCod=self.MunCod,
+            PagTriEstReg='pagada'
+        ).aggregate(total=Sum('PagTriPag'))['total'] or 0
+        self.MunPreAnu = total_pagos
         self.save()
 
-@receiver(post_save, sender=PagoTributario)
-def actualizar_presupuesto_anual_municipio(sender, instance, created, **kwargs):
-    if created:
-        with transaction.atomic():
-            instance.CasCod.VivCod.ZonCod.MunCod.actualizar_presupuesto_anual(instance.CasCod.VivCod.ZonCod.MunCod_id)
-
-@receiver(post_save, sender=Vivienda)
-def actualizar_numero_viviendas_municipio(sender, instance, created, **kwargs):
-    if created:
-        with transaction.atomic():
-            instance.ZonCod.MunCod.actualizar_numero_viviendas()
-
+    def update_numero_viviendas(self):
+        num_viviendas = Vivienda.objects.filter(ZonCod__MunCod=self.MunCod).count()
+        self.MunNumViv = num_viviendas
+        self.save()
+    
 class ZonaUrbana(models.Model):
     ZonCod = models.AutoField(db_column='ZonCod', primary_key=True, verbose_name="Código")
     ZonNom = models.CharField(db_column='ZonNom', max_length=20, verbose_name="Nombre", unique=True, null=False)
@@ -107,40 +95,21 @@ class Vivienda(models.Model):
         super().save(*args, **kwargs)
 
 class Familia(models.Model):
-    FamCod = models.AutoField(db_column='FamCod', primary_key=True, verbose_name="Código")
-    FamNom = models.CharField(db_column='FamNom', max_length=15, verbose_name="Nombre")
-    FamNumInt = models.IntegerField(db_column='FamNumInt', default=0, verbose_name="Número de Integrantes")
+    FamCod = models.AutoField(db_column ='FamCod',primary_key=True, verbose_name="Código")
+    FamNom = models.CharField(db_column ='FamNom',max_length=15,verbose_name="Nombre")
+    FamNumInt = models.IntegerField(db_column ='FamNumInt',default=0,verbose_name="Número de Integrantes")
     FamEstReg = models.CharField(db_column='FamEstReg', max_length=1, default='A', verbose_name="Estado de Registro")
-
     class Meta:
         db_table = 'Familia'
 
     def __str__(self):
         return self.FamNom
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        # Crear automáticamente un Propietario Persona si no existe
-        propietario_tipo = TipoPersona.objects.get(TipPerDes='Propietario')
-        propietario_existente = Persona.objects.filter(FamCod=self, TipPerCod=propietario_tipo).exists()
-        if not propietario_existente:
-            Persona.objects.create(PerNom='Propietario Familia {}'.format(self.FamNom), FamCod=self, TipPerCod=propietario_tipo)
-
-    def actualizar_numero_integrantes(self):
-        self.FamNumInt = Persona.objects.filter(FamCod=self).count()
+    def update_num_integrantes(self):
+        num_integrantes = Persona.objects.filter(FamCod=self.FamCod).count()
+        self.FamNumInt = num_integrantes
         self.save()
-
-@receiver(post_save, sender=Persona)
-def actualizar_numero_integrantes_familia(sender, instance, created, **kwargs):
-    if created:
-        with transaction.atomic():
-            instance.FamCod.actualizar_numero_integrantes()
-
-@receiver(post_delete, sender=Persona)
-def actualizar_numero_integrantes_familia_delete(sender, instance, **kwargs):
-    with transaction.atomic():
-        instance.FamCod.actualizar_numero_integrantes()
-            
+        
 class TipoPersona(models.Model):
     TipPerCod = models.AutoField(db_column='TipPerCod',primary_key=True,verbose_name="Código")
     TipPerDes = models.CharField(db_column='TipPerDes',max_length=15,verbose_name="Descripción", unique=True)
@@ -313,3 +282,25 @@ class Propietario(models.Model):
 
         self.full_clean()  # Validar antes de guardar
         super().save(*args, **kwargs)
+
+# Señales y funciones de manejo para actualizar presupuesto y número de viviendas de Municipio
+@receiver(post_save, sender=PagoTributario)
+@receiver(post_delete, sender=PagoTributario)
+def update_presupuesto_municipio(sender, instance, **kwargs):
+    municipio = instance.CasCod.VivCod.ZonCod.MunCod
+    municipio.update_presupuesto_anual()
+
+
+@receiver(post_save, sender=Vivienda)
+@receiver(post_delete, sender=Vivienda)
+def update_numero_viviendas_municipio(sender, instance, **kwargs):
+    municipio = instance.ZonCod.MunCod
+    municipio.update_numero_viviendas()
+
+
+# Señales y funciones de manejo para actualizar el número de integrantes de la familia
+@receiver(post_save, sender=Persona)
+@receiver(post_delete, sender=Persona)
+def update_numero_integrantes_familia(sender, instance, **kwargs):
+    familia = instance.FamCod
+    familia.update_num_integrantes()
